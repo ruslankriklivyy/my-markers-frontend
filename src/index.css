@@ -11,3 +11,12 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.mapboxgl-marker {
+  cursor: pointer;
+}
+
+.mapboxgl-popup-close-button {
+  font-size: 23px;
+  width: 20px;
+}
