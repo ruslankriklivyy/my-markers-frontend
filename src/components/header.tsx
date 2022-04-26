@@ -1,20 +1,23 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Button,
   Container,
   Heading,
+  Spinner,
+  useColorMode,
   useDisclosure,
 } from '@chakra-ui/react';
-import loginIcon from '../assets/icons/login.svg';
+import logoIcon from '../assets/icons/logo.png';
 import CustomModal from './custom-modal';
 import LoginForm from './auth/login-form';
 import RegistrationForm from './auth/registration-form';
 import User from './user';
-import { useRootStore } from '../store/RootState.Context';
-import { Observer } from 'mobx-react-lite';
+import { useRootStore } from '../store/root-state.context';
+import { observer, Observer } from 'mobx-react-lite';
+import { getCookie } from '../utils/cookies';
 
-const Header = () => {
+const Header = observer(() => {
   const {
     isOpen: isOpenLogin,
     onOpen: onOpenLogin,
@@ -26,50 +29,71 @@ const Header = () => {
     onClose: onCloseRegistration,
   } = useDisclosure();
   const { userStore } = useRootStore();
+  const refreshToken = getCookie('refresh_token');
+  const { colorMode } = useColorMode();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    userStore.getCurrentUser();
-  }, []);
+    if (refreshToken) {
+      setIsLoading(true);
+      userStore.getCurrentUser().finally(() => setIsLoading(false));
+    }
+  }, [refreshToken]);
 
   return (
-    <Box bg={'#fff'} color={'black'} boxShadow={'md'} p={2}>
+    <Box boxShadow={'md'} p={2}>
       <Container
         maxW={'1000px'}
         display={'flex'}
         alignItems={'center'}
         justifyContent={'space-between'}
       >
-        <Heading as="h2" size="lg">
-          React Markers
-        </Heading>
+        <Box display={'flex'} alignItems={'center'}>
+          <Heading as="h2" size="lg" mr={4}>
+            React Markers
+          </Heading>
+          <img className={'logo'} src={logoIcon} alt={'logo'} />
+        </Box>
         <Observer>
-          {() =>
-            !userStore.currentUser ? (
-              <Box>
-                <Button
-                  onClick={onOpenLogin}
-                  rightIcon={
-                    <img
-                      src={loginIcon}
-                      width={20}
-                      height={20}
-                      style={{ transform: 'rotate(180deg)' }}
-                      alt={'login'}
-                    />
-                  }
-                  mr={'3'}
-                  color={'black'}
-                >
-                  Login
-                </Button>
-                <Button onClick={onOpenRegistration} color={'black'}>
-                  Registration
-                </Button>
-              </Box>
-            ) : (
-              <User />
-            )
-          }
+          {() => (
+            <>
+              {!isLoading ? (
+                !userStore.currentUser ? (
+                  <Box>
+                    <Button
+                      onClick={onOpenLogin}
+                      rightIcon={
+                        <svg
+                          style={{
+                            width: 18,
+                            height: 18,
+                            transform: 'rotate(180deg)',
+                          }}
+                          fill={colorMode === 'dark' ? '#fff' : '#000'}
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M20.5,15.1a1,1,0,0,0-1.34.45A8,8,0,1,1,12,4a7.93,7.93,0,0,1,7.16,4.45,1,1,0,0,0,1.8-.9,10,10,0,1,0,0,8.9A1,1,0,0,0,20.5,15.1ZM21,11H11.41l2.3-2.29a1,1,0,1,0-1.42-1.42l-4,4a1,1,0,0,0-.21.33,1,1,0,0,0,0,.76,1,1,0,0,0,.21.33l4,4a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42L11.41,13H21a1,1,0,0,0,0-2Z" />
+                        </svg>
+                      }
+                      mr={'3'}
+                    >
+                      Login
+                    </Button>
+                    <Button onClick={onOpenRegistration}>Registration</Button>
+                  </Box>
+                ) : (
+                  <User />
+                )
+              ) : (
+                <Spinner
+                  marginRight={20}
+                  color={'gray.800'}
+                  emptyColor={'gray.300'}
+                />
+              )}
+            </>
+          )}
         </Observer>
       </Container>
       <CustomModal isOpen={isOpenLogin} onClose={onCloseLogin} title={'Login'}>
@@ -84,6 +108,6 @@ const Header = () => {
       </CustomModal>
     </Box>
   );
-};
+});
 
 export default Header;

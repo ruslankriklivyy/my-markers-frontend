@@ -6,11 +6,12 @@ import {
   FormErrorMessage,
   FormLabel,
   Input,
+  useToast,
 } from '@chakra-ui/react';
 import { object, string } from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useRootStore } from '../../store/RootState.Context';
+import { useRootStore } from '../../store/root-state.context';
 import { Observer } from 'mobx-react-lite';
 
 interface FormValues {
@@ -47,6 +48,7 @@ const LoginForm: FC<LoginFormProps> = ({ onClose }) => {
 
   const [loginError, setLoginError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const toast = useToast();
   const { userStore } = useRootStore();
 
   const onSubmit = async (data: FormValues) => {
@@ -56,12 +58,21 @@ const LoginForm: FC<LoginFormProps> = ({ onClose }) => {
     await userStore.login(email, password);
 
     if (!userStore.currentUser) {
-      return setLoginError('Incorrect password or email');
+      setLoginError('Incorrect password or email');
     }
 
-    onClose && onClose();
-    reset();
+    toast({
+      title: userStore.error ? 'You was not logged' : 'You was logged',
+      status: userStore.error ? 'error' : 'success',
+      duration: 4000,
+      isClosable: true,
+    });
     setIsLoading(false);
+
+    if (!userStore.error) {
+      reset();
+      onClose && onClose();
+    }
   };
 
   return (

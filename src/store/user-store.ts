@@ -1,22 +1,23 @@
 import { makeAutoObservable } from 'mobx';
 import { usersApi } from '../core/axios';
-import { removeCookie, setCookie } from '../utils/cookies';
 
 interface User {
   id: string;
-  fullName: string;
+  full_name: string;
   email: string;
-  isActivated: boolean;
+  is_activated: boolean;
 }
 
 interface AuthResponse {
-  accessToken: string;
-  refreshToken: string;
+  access_token: string;
+  refresh_token: string;
   user: User;
 }
 
 class UserStore {
   currentUser: User | null = null;
+
+  error: string | null = null;
 
   constructor() {
     makeAutoObservable(this);
@@ -28,38 +29,36 @@ class UserStore {
       this.setCurrentUser(user);
     } catch (error) {
       const data: AuthResponse = await usersApi.refresh();
-
-      localStorage.setItem('accessToken', data.accessToken);
-      setCookie('refreshToken', data.refreshToken, 30);
       this.setCurrentUser(data.user);
     }
   }
 
   async login(email: string, password: string) {
     try {
-      const data = await usersApi.login(email, password);
-
-      localStorage.setItem('accessToken', data.accessToken);
-      setCookie('refreshToken', data.refreshToken, 30);
+      const data: AuthResponse = await usersApi.login(email, password);
       this.setCurrentUser(data.user);
-    } catch (error) {
+    } catch (error: any) {
       this.setCurrentUser(null);
+      this.error = error.message;
     }
   }
 
-  async registration(fullName: string, email: string, password: string) {
-    const data = await usersApi.registration(fullName, email, password);
-
-    localStorage.setItem('accessToken', data.accessToken);
-    setCookie('refreshToken', data.refreshToken, 30);
-    this.setCurrentUser(data.user);
+  async registration(full_name: string, email: string, password: string) {
+    try {
+      const data: AuthResponse = await usersApi.registration(
+        full_name,
+        email,
+        password,
+      );
+      this.setCurrentUser(data.user);
+    } catch (error: any) {
+      this.error = error.message;
+    }
   }
 
   async logout() {
     await usersApi.logout();
     this.currentUser = null;
-    localStorage.removeItem('accessToken');
-    removeCookie('refreshToken');
   }
 
   setCurrentUser(user: User | null) {

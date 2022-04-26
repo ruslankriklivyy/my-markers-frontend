@@ -11,7 +11,7 @@ import {
 import { object, string, ref } from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useRootStore } from '../../store/RootState.Context';
+import { useRootStore } from '../../store/root-state.context';
 
 interface FormValues {
   fullName: string;
@@ -61,25 +61,27 @@ const RegistrationForm: FC<LoginFormProps> = ({ onClose }) => {
   const toast = useToast();
 
   const onSubmit = async (data: FormValues) => {
-    const { fullName, email, password } = data;
+    const { fullName: full_name, email, password } = data;
 
     setIsLoading(true);
-    await userStore.registration(fullName, email, password);
+    await userStore.registration(full_name, email, password);
 
     if (!userStore.currentUser) {
-      return setRegistrationError('This email is already use');
+      setRegistrationError('This email is already use');
     }
 
-    onClose && onClose();
-    reset();
-    setIsLoading(false);
     toast({
-      title: 'Account created.',
-      description: "We've created your account for you.",
-      status: 'success',
+      title: !userStore.error ? 'Account created' : 'Account not created',
+      status: userStore.error ? 'error' : 'success',
       duration: 4000,
       isClosable: true,
     });
+    setIsLoading(false);
+
+    if (!userStore.error) {
+      onClose && onClose();
+      reset();
+    }
   };
 
   return (
@@ -109,12 +111,7 @@ const RegistrationForm: FC<LoginFormProps> = ({ onClose }) => {
         <FormErrorMessage>{errors.passwordRepeat?.message}</FormErrorMessage>
       </FormControl>
       {registrationError && (
-        <span
-          style={{ marginTop: 20 }}
-          className={'chakra-form__error-message css-170ki1a'}
-        >
-          {registrationError}
-        </span>
+        <p style={{ marginTop: 20, color: 'red' }}>{registrationError}</p>
       )}
       <Box mt={7} mb={5} display={'flex'} justifyContent={'space-between'}>
         <Button variant="ghost" onClick={onClose}>

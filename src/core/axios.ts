@@ -1,11 +1,22 @@
-import Axios from 'axios';
+import Axios, { AxiosError } from 'axios';
 import { LocationPosition } from '../utils/getCurrentLocation';
+import { LayerData } from '../store/layer-store';
+import { MarkerDataCustomFields } from '../store/marker-store';
 
 const instance = Axios.create({
   baseURL: process.env.REACT_APP_API_URL || 'http://localhost:3001/api',
   withCredentials: true,
   headers: {
-    Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+    Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+  },
+});
+
+const fileInstance = Axios.create({
+  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:3001/api',
+  withCredentials: true,
+  headers: {
+    Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+    'Content-Type': 'multipart/form-data;',
   },
 });
 
@@ -19,22 +30,74 @@ export const markersApi = {
     }
   },
 
+  async fetchOne(id: string) {
+    try {
+      const { data } = await instance.get(`/markers/${id}`);
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
   async create(
+    marker_color: string,
     title: string,
     description: string,
     layer: string,
     location: LocationPosition,
+    preview?: { url: string; _id: string } | null,
+    customFields?: MarkerDataCustomFields[] | null,
   ) {
     try {
-      const { data } = await instance.post('/markers/create', {
+      const marker = {
+        marker_color,
         title,
         description,
         layer,
         location,
-      });
+        preview,
+        custom_fields: customFields,
+      };
+
+      if (!marker.preview) delete marker.preview;
+      if (!marker.custom_fields || !marker.custom_fields.length)
+        delete marker.custom_fields;
+
+      await instance.post('/markers/create', marker);
+    } catch (error: any) {
+      throw Error(error.message);
+    }
+  },
+
+  async edit(
+    id: string,
+    marker_color: string,
+    title: string,
+    description: string,
+    layer: string,
+    location: LocationPosition,
+    preview?: { url: string; _id: string } | null,
+    customFields?: MarkerDataCustomFields[] | null,
+  ) {
+    try {
+      const marker = {
+        title,
+        marker_color,
+        description,
+        layer,
+        location,
+        preview,
+        custom_fields: customFields,
+      };
+
+      if (!marker.preview) delete marker.preview;
+      if (!marker.custom_fields || !marker.custom_fields.length)
+        delete marker.custom_fields;
+
+      const { data } = await instance.patch(`/markers/${id}`, marker);
       return data;
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      throw Error(error.message);
     }
   },
 
@@ -58,12 +121,21 @@ export const layersApi = {
     }
   },
 
-  async create(name: string, type: 'private' | 'public') {
+  async getOne(id: string) {
     try {
-      const { data } = await instance.post('/layers/create', { name, type });
+      const { data } = await instance.get(`/layers/${id}`);
       return data;
     } catch (error) {
       console.log(error);
+    }
+  },
+
+  async create(newLayer: Omit<LayerData, '_id'>) {
+    try {
+      const { data } = await instance.post('/layers/create', newLayer);
+      return data;
+    } catch (error: any) {
+      throw Error(error.message);
     }
   },
 
@@ -80,29 +152,34 @@ export const layersApi = {
 export const usersApi = {
   async login(email: string, password: string) {
     try {
-      const { data } = await instance.post('/login', { email, password });
+      const { data } = await instance.post('/auth/login', { email, password });
+      localStorage.setItem('access_token', data.access_token);
       return data;
-    } catch (error) {
-      throw Error();
+    } catch (error: any) {
+      throw Error(error);
     }
   },
 
-  async registration(fullName: string, email: string, password: string) {
+  async registration(full_name: string, email: string, password: string) {
     try {
-      const { data } = await instance.post('/registration', {
-        fullName,
+      const { data } = await instance.post('/auth/registration', {
+        full_name,
         email,
         password,
       });
+
+      localStorage.setItem('access_token', data.access_token);
       return data;
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      throw Error(error);
     }
   },
 
   async refresh() {
     try {
-      const { data } = await instance.get('/refresh');
+      const { data } = await instance.get('/auth/refresh');
+
+      localStorage.setItem('access_token', data.access_token);
       return data;
     } catch (error) {
       console.log(error);
@@ -111,7 +188,9 @@ export const usersApi = {
 
   async logout() {
     try {
-      const { data } = await instance.post('/logout');
+      const { data } = await instance.post('/auth/logout');
+
+      localStorage.removeItem('access_token');
       return data;
     } catch (error) {
       console.log(error);
@@ -124,6 +203,29 @@ export const usersApi = {
       return data;
     } catch (error) {
       throw Error();
+    }
+  },
+};
+
+export const filesApi = {
+  async create(file: File) {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const { data } = await fileInstance.post('/files', formData);
+      return data;
+    } catch (error: any) {
+      throw Error(error.message);
+    }
+  },
+
+  async remove(id: string) {
+    try {
+      const { data } = await fileInstance.delete(`/files/${id}`);
+      return data;
+    } catch (error) {
+      console.log(error);
     }
   },
 };

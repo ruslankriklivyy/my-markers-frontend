@@ -13,7 +13,7 @@ import {
   PopoverTrigger,
   Text,
 } from '@chakra-ui/react';
-import { useRootStore } from '../store/RootState.Context';
+import { useRootStore } from '../store/root-state.context';
 import { Observer } from 'mobx-react-lite';
 
 const User = () => {
@@ -28,7 +28,7 @@ const User = () => {
               {/*
               // @ts-ignore */}
               <PopoverTrigger>
-                <Button>{userStore.currentUser?.fullName}</Button>
+                <Button>{userStore.currentUser?.full_name}</Button>
               </PopoverTrigger>
               <PopoverContent>
                 <PopoverCloseButton />
@@ -43,9 +43,17 @@ const User = () => {
                     <Text fontSize="md" fontWeight={500}>
                       Email verified:
                     </Text>
-                    <Alert status="warning">
+                    <Alert
+                      status={
+                        userStore.currentUser?.is_activated
+                          ? 'success'
+                          : 'warning'
+                      }
+                    >
                       <AlertIcon />
-                      Your email is not verified
+                      {userStore.currentUser?.is_activated
+                        ? 'Your email is verified'
+                        : 'Your email is not verified'}
                     </Alert>
                   </Box>
                 </PopoverBody>

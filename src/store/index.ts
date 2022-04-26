@@ -1,7 +1,7 @@
 import { createContext } from 'react';
-import UserStore from './userStore';
-import MarkerStore from './markerStore';
-import LayerStore from './layerStore';
+import UserStore from './user-store';
+import MarkerStore from './marker-store';
+import LayerStore from './layer-store';
 
 const rootStoreContext = createContext({
   userStore: new UserStore(),

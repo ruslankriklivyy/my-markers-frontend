@@ -7,16 +7,167 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+html {
+  height: 100%;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c4c2c2;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #adacac;
 }
 
 .mapboxgl-marker {
   cursor: pointer;
 }
 
+.mapboxgl-popup-content {
+  min-width: 250px;
+  max-width: 400px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.popup-dark .mapboxgl-popup-content {
+  background-color: #2d3748;
+  color: #fff;
+}
+
+.popup-dark .mapboxgl-popup-tip {
+  border-top-color: #2d3748 !important;
+}
+
 .mapboxgl-popup-close-button {
-  font-size: 23px;
+  font-size: 28px;
   width: 20px;
+}
+
+.upload-image,
+.upload-file {
+  border: 1px solid #e7e3e3;
+  padding: 8px 15px;
+  border-radius: 5px;
+}
+
+.preview-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+.react-datepicker {
+  font-family: inherit !important;
+}
+
+.react-datepicker__day--outside-month {
+  opacity: 0.6;
+}
+
+.react-datepicker__day--keyboard-selected,
+.react-datepicker__month-text--keyboard-selected,
+.react-datepicker__quarter-text--keyboard-selected,
+.react-datepicker__year-text--keyboard-selected {
+  background-color: #237df5 !important;
+}
+
+.react-datepicker__day--keyboard-selected:hover,
+.react-datepicker__month-text--keyboard-selected:hover,
+.react-datepicker__quarter-text--keyboard-selected:hover,
+.react-datepicker__year-text--keyboard-selected:hover {
+  background-color: #176fe0 !important;
+}
+
+.calendar-dark {
+  background: #2d3748 !important;
+}
+
+.calendar-dark div {
+  color: #fff !important;
+}
+
+.calendar-dark .react-datepicker__day:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.calendar-dark .react-datepicker__header {
+  background: #2d3748 !important;
+}
+
+.error {
+  color: #fc8181;
+  margin-top: 7px;
+  font-size: 14px;
+}
+
+.logo {
+  display: block;
+  width: 33px;
+  height: 33px;
+  object-fit: cover;
+}
+
+.react-colorful,
+.pin {
+  width: 70% !important;
+  height: 120px !important;
+}
+
+.marker-pin {
+  position: relative;
+  z-index: 5;
+}
+
+.marker-pin svg {
+  display: block;
+  width: 30px;
+  height: 30px;
+  z-index: 4;
+}
+
+.btn-like {
+  background: rgba(255, 0, 0, 0.2) !important;
+  margin: 0 auto;
+}
+
+.btn-like:hover {
+  background: rgba(255, 0, 0, 0.4) !important;
+}
+
+.mapboxgl-ctrl-geocoder.mapboxgl-ctrl input {
+  outline: none !important;
+}
+
+.chakra-ui-dark .mapboxgl-ctrl-geocoder.mapboxgl-ctrl {
+  border-radius: 8px;
+  background: #2d3748 !important;
+  color: #fff !important;
+}
+
+.chakra-ui-dark .mapboxgl-ctrl-geocoder--button {
+  background: transparent !important;
+}
+
+.chakra-ui-dark .mapboxgl-ctrl-geocoder.mapboxgl-ctrl input::placeholder {
+  color: #fff;
+}
+
+.chakra-ui-dark .mapboxgl-ctrl-geocoder.mapboxgl-ctrl input {
+  color: #fff !important;
 }
