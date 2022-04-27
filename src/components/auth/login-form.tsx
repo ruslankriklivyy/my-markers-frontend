@@ -2,10 +2,12 @@ import React, { FC, useState } from 'react';
 import {
   Box,
   Button,
+  Divider,
   FormControl,
   FormErrorMessage,
   FormLabel,
   Input,
+  Text,
   useToast,
 } from '@chakra-ui/react';
 import { object, string } from 'yup';
@@ -13,6 +15,11 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useRootStore } from '../../store/root-state.context';
 import { Observer } from 'mobx-react-lite';
+import GoogleLogin, {
+  GoogleLoginResponse,
+  GoogleLoginResponseOffline,
+} from 'react-google-login';
+import GoogleLoginComp from './google-login';
 
 interface FormValues {
   email: string;
@@ -72,6 +79,25 @@ const LoginForm: FC<LoginFormProps> = ({ onClose }) => {
     if (!userStore.error) {
       reset();
       onClose && onClose();
+      document.location.reload();
+    }
+  };
+
+  const responseGoogle = async (res: any) => {
+    setIsLoading(true);
+    await userStore.signInGoogle(res.tokenId);
+
+    toast({
+      title: userStore.error ? 'You was not logged' : 'You was logged',
+      status: userStore.error ? 'error' : 'success',
+      duration: 4000,
+      isClosable: true,
+    });
+    setIsLoading(false);
+
+    if (!userStore.error) {
+      onClose && onClose();
+      reset();
     }
   };
 
@@ -84,7 +110,7 @@ const LoginForm: FC<LoginFormProps> = ({ onClose }) => {
             <Input {...register('email')} id="email" type="email" />
             <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
           </FormControl>
-          <FormControl isInvalid={!!errors.password?.message} isRequired>
+          <FormControl mb={7} isInvalid={!!errors.password?.message} isRequired>
             <FormLabel htmlFor="password">Password</FormLabel>
             <Input {...register('password')} id="password" type="password" />
             <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
@@ -92,6 +118,7 @@ const LoginForm: FC<LoginFormProps> = ({ onClose }) => {
           {loginError && (
             <p style={{ marginTop: 20, color: 'red' }}>{loginError}</p>
           )}
+          <GoogleLoginComp responseGoogle={responseGoogle} />
           <Box mt={7} mb={5} display={'flex'} justifyContent={'space-between'}>
             <Button variant="ghost" onClick={onClose}>
               Close

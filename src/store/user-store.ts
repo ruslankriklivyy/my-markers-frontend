@@ -2,6 +2,7 @@ import { makeAutoObservable } from 'mobx';
 import { usersApi } from '../core/axios';
 
 interface User {
+  avatar?: string;
   id: string;
   full_name: string;
   email: string;
@@ -39,6 +40,15 @@ class UserStore {
       this.setCurrentUser(data.user);
     } catch (error: any) {
       this.setCurrentUser(null);
+      this.error = error.message;
+    }
+  }
+
+  async signInGoogle(accessToken: string) {
+    try {
+      const data = await usersApi.signInGoogle(accessToken);
+      this.setCurrentUser(data.user);
+    } catch (error: any) {
       this.error = error.message;
     }
   }

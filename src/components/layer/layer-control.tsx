@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Checkbox,
@@ -22,8 +22,6 @@ import { useRootStore } from '../../store/root-state.context';
 import { observer } from 'mobx-react-lite';
 import { DeleteIcon } from '@chakra-ui/icons';
 import layersIcon from '../../assets/icons/layers.png';
-import user from '../user';
-import { toJS } from 'mobx';
 
 const LayerControl = observer(() => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -34,58 +32,6 @@ const LayerControl = observer(() => {
   } = useDisclosure();
   const { layerStore, userStore } = useRootStore();
   const [currentLayerId, setCurrentLayerId] = useState<string | null>(null);
-
-  const handleCheckedChange = (
-    event: ChangeEvent<HTMLInputElement>,
-    id: string,
-    userId: string | undefined,
-  ) => {
-    const isChecked = event.target.checked;
-
-    if (isChecked) {
-      layerStore.addCheckedLayer({
-        layerId: id,
-        userId,
-      });
-    } else {
-      layerStore.removeCheckedLayer(id);
-    }
-  };
-
-  const checkUncheckAll = (event: ChangeEvent<HTMLInputElement>) => {
-    const isChecked = event.target.checked;
-
-    if (isChecked) {
-      layerStore.setCheckedLayers(
-        layerStore?.layers?.map((elem) => {
-          return { layerId: elem._id, userId: elem.user };
-        }) || [],
-      );
-    } else {
-      layerStore.setCheckedLayers([]);
-    }
-  };
-
-  const checkMyLayers = (event: ChangeEvent<HTMLInputElement>) => {
-    const isChecked = event.target.checked;
-
-    if (isChecked) {
-      let newCurrentLayerIds = [];
-
-      for (const layer of layerStore?.layers!) {
-        if (layer.user === userStore.currentUser?.id) {
-          newCurrentLayerIds.push({
-            layerId: layer._id,
-            userId: layer.user,
-          });
-        }
-      }
-
-      layerStore.setCheckedLayers(newCurrentLayerIds);
-    } else {
-      layerStore.setCheckedLayers([]);
-    }
-  };
 
   const openRemoveModal = (id: string) => {
     setCurrentLayerId(id);
@@ -104,12 +50,7 @@ const LayerControl = observer(() => {
   }, [userStore.currentUser]);
 
   useEffect(() => {
-    layerStore.layers?.length &&
-      layerStore.setCheckedLayers(
-        layerStore.layers.map(({ _id, user }) => {
-          return { layerId: _id, userId: user };
-        }),
-      );
+    layerStore.initCheckedLayers();
   }, [layerStore.layers]);
 
   useEffect(() => {
@@ -142,31 +83,37 @@ const LayerControl = observer(() => {
                   Layers
                 </Heading>
                 <Box display={'flex'}>
+                  {userStore.currentUser && (
+                    <Checkbox
+                      mr={3}
+                      isChecked={
+                        layerStore.checkedLayers.length > 0 &&
+                        layerStore.checkedLayers.every(
+                          ({ userId }) => userId === userStore.currentUser?.id,
+                        )
+                      }
+                      onChange={(event) =>
+                        layerStore.checkCurrentUserLayers(
+                          event.target.checked,
+                          userStore.currentUser?.id,
+                        )
+                      }
+                    >
+                      <Text fontSize="sm">Show my</Text>
+                    </Checkbox>
+                  )}
                   <Checkbox
-                    mr={3}
-                    isChecked={
-                      !!layerStore.checkedLayers?.length &&
-                      layerStore.checkedLayers?.every(
-                        (elem) => elem?.userId === userStore.currentUser?.id,
-                      )
+                    isChecked={layerStore.isCheckAll}
+                    onChange={(event) =>
+                      layerStore.checkAndUncheck(event.target.checked)
                     }
-                    onChange={checkMyLayers}
-                  >
-                    <Text fontSize="sm">Show my</Text>
-                  </Checkbox>
-                  <Checkbox
-                    isChecked={
-                      layerStore.layers?.length ===
-                      layerStore.checkedLayers?.length
-                    }
-                    onChange={checkUncheckAll}
                   >
                     <Text fontSize="sm">Show all</Text>
                   </Checkbox>
                 </Box>
               </Box>
               <Stack spacing={[1, 3]}>
-                {layerStore.layers?.length ? (
+                {layerStore.layers.length ? (
                   layerStore.layers.map(({ _id, name, user }) => (
                     <Box
                       key={_id}
@@ -177,9 +124,13 @@ const LayerControl = observer(() => {
                       <Checkbox
                         defaultChecked
                         onChange={(event) =>
-                          handleCheckedChange(event, _id, user)
+                          layerStore.handleCheckedChange(
+                            event.target.checked,
+                            _id,
+                            userStore.currentUser?.id,
+                          )
                         }
-                        isChecked={layerStore.checkedLayers?.some(
+                        isChecked={layerStore.checkedLayers.some(
                           (elem) => elem.layerId === _id,
                         )}
                         value={_id}
@@ -191,7 +142,7 @@ const LayerControl = observer(() => {
                         onClick={() => openRemoveModal(_id)}
                         w={4}
                         h={4}
-                        color="red.500"
+                        color={'red.500'}
                         cursor={'pointer'}
                       />
                     </Box>

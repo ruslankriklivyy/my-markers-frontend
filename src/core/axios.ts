@@ -150,6 +150,12 @@ export const layersApi = {
 };
 
 export const usersApi = {
+  async signInGoogle(accessToken: string) {
+    const { data } = await instance.post('/auth/google', { accessToken });
+    localStorage.setItem('access_token', data.access_token);
+    return data;
+  },
+
   async login(email: string, password: string) {
     try {
       const { data } = await instance.post('/auth/login', { email, password });

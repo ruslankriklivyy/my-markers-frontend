@@ -129,16 +129,22 @@ code {
   height: 120px !important;
 }
 
-.marker-pin {
-  position: relative;
-  z-index: 5;
+.mapboxgl-user-location-accuracy-circle.mapboxgl-marker.mapboxgl-marker-anchor-center {
+  z-index: 5 !important;
+}
+
+.mapboxgl-popup.mapboxgl-popup-anchor-bottom {
+  z-index: 200 !important;
+}
+
+.mapboxgl-marker {
+  z-index: 100 !important;
 }
 
 .marker-pin svg {
   display: block;
   width: 30px;
   height: 30px;
-  z-index: 4;
 }
 
 .btn-like {
@@ -170,4 +176,60 @@ code {
 
 .chakra-ui-dark .mapboxgl-ctrl-geocoder.mapboxgl-ctrl input {
   color: #fff !important;
+}
+
+.chakra-ui-dark .btn-login-google {
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #fff !important;
+  transition: all 0.1s ease !important;
+}
+
+.chakra-ui-dark .btn-login-google:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.chakra-ui-dark .btn-login-google > div {
+  background: transparent !important;
+}
+
+.mapboxgl-ctrl-geolocate:first-child {
+  display: none !important;
+}
+
+.mapboxgl-ctrl-group button + button {
+  border-top: none !important;
+}
+
+.btn-login-google {
+  justify-content: center !important;
+  text-align: center !important;
+  border-radius: 5px !important;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 2px 0px !important;
+}
+
+.btn-login-google span {
+  font-size: 15px !important;
+  font-family: inherit !important;
+  font-weight: 600 !important;
+  color: inherit !important;
+}
+
+.avatar {
+  display: block;
+  width: 42px;
+  height: 42px;
+  border-radius: 100%;
+  transition: all 0.2s ease;
+  outline: 2px solid transparent;
+  cursor: pointer;
+}
+
+.avatar:hover {
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.6);
+}
+
+.chakra-popover__popper {
+  z-index: 300 !important;
 }

@@ -54,26 +54,27 @@ class MarkerStore {
           const value = data[field.name.toLowerCase()];
 
           if (value) {
-            if (field.type !== 'file' && field.type !== 'date') {
-              newCustomFields.push({
-                ...field,
-                value,
-              });
-            }
+            switch (field.type) {
+              case 'file':
+                const { url } = await filesApi.create(value);
+                newCustomFields.push({
+                  ...field,
+                  value: url,
+                });
+                break;
 
-            if (field.type === 'date') {
-              newCustomFields.push({
-                ...field,
-                value: format(new Date(value), 'MM.dd.yyyy'),
-              });
-            }
+              case 'date':
+                newCustomFields.push({
+                  ...field,
+                  value: format(new Date(value), 'MM.dd.yyyy'),
+                });
+                break;
 
-            if (field.type === 'file') {
-              const { url } = await filesApi.create(value);
-              newCustomFields.push({
-                ...field,
-                value: url,
-              });
+              default:
+                newCustomFields.push({
+                  ...field,
+                  value,
+                });
             }
           }
         }

@@ -8,13 +8,7 @@ import {
   getCurrentLocation,
   LocationPosition,
 } from '../utils/getCurrentLocation';
-import {
-  Button,
-  Spinner,
-  Tooltip,
-  useColorMode,
-  useDisclosure,
-} from '@chakra-ui/react';
+import { Spinner, useColorMode, useDisclosure } from '@chakra-ui/react';
 import { MapLayerMouseEvent } from 'mapbox-gl';
 import CustomModal from './custom-modal';
 import MarkerAddForm from './marker/marker-add-form';
@@ -112,10 +106,14 @@ const MapComp = observer(() => {
           {markerStore.markers &&
             markerStore.markers.map(
               (marker) =>
-                layerStore.checkedLayers?.some(
-                  (elem) => elem.layerId === marker.layer,
+                layerStore.checkedLayers.some(
+                  ({ layerId }) => layerId === marker.layer,
                 ) && (
-                  <CustomMarker openMarkerPopup={openMarkerPopup} {...marker} />
+                  <CustomMarker
+                    key={marker._id}
+                    openMarkerPopup={openMarkerPopup}
+                    {...marker}
+                  />
                 ),
             )}
           {showMarkerPopup && currentMarker && (

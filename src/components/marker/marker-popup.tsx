@@ -89,47 +89,21 @@ const MarkerPopup: FC<MarkerPopupProps> = ({
             )}
           </Box>
         ))}
-        <Box
-          mt={5}
-          display={'flex'}
-          alignItems={'center'}
-          justifyContent={'space-between'}
-        >
-          {currentMarker.user === userStore.currentUser?.id && (
+        {currentMarker.user === userStore.currentUser?.id && (
+          <Box
+            mt={5}
+            display={'flex'}
+            alignItems={'center'}
+            justifyContent={'space-between'}
+          >
             <Button onClick={onOpenEdit} w={50} color={'blue.500'} isFullWidth>
               <EditIcon w={5} h={5} />
             </Button>
-          )}
-          <Button w={50} className={'btn-like'}>
-            <svg
-              version="1.1"
-              id="Layer_1"
-              xmlns="http://www.w3.org/2000/svg"
-              xmlnsXlink="http://www.w3.org/1999/xlink"
-              x="0px"
-              y="0px"
-              viewBox="0 0 512 512"
-              xmlSpace="preserve"
-            >
-              <g>
-                <g>
-                  <path
-                    fill="red"
-                    d="M467.204,67.921C412.786,20.394,329.86,25.984,282.31,80.365l-26.311,29.66l-26.311-29.66
-			C182.138,25.984,99.212,20.396,44.795,67.921c-54.437,47.543-60.045,130.51-12.503,184.946l185.641,206.535
-			c9.692,10.783,23.568,16.968,38.067,16.968c14.499,0,28.375-6.185,38.067-16.968L479.546,253.05l0.161-0.182
-			C527.251,198.431,521.641,115.464,467.204,67.921z"
-                  />
-                </g>
-              </g>
-            </svg>
-          </Button>
-          {currentMarker.user === userStore.currentUser?.id && (
             <Button w={50} onClick={removeMarker} color={'red'} isFullWidth>
               <DeleteIcon w={5} h={5} />
             </Button>
-          )}
-        </Box>
+          </Box>
+        )}
       </Popup>
       <CustomModal isOpen={isOpenEdit} onClose={onCloseEdit}>
         <MarkerEditForm id={currentMarker._id} onClose={onCloseEdit} />

@@ -28,6 +28,7 @@
     "react-datepicker": "^4.7.0",
     "react-dom": "^18.0.0",
     "react-dropzone": "^12.0.5",
+    "react-google-login": "^5.2.2",
     "react-hook-form": "^7.30.0",
     "react-map-gl": "^7.0.10",
     "react-scripts": "5.0.1",

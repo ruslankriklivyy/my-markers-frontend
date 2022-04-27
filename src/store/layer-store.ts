@@ -27,9 +27,9 @@ export interface CheckedLayer {
 }
 
 class LayerStore {
-  layers: LayerData[] | null = null;
+  layers: LayerData[] = [];
   currentLayer: LayerData | null = null;
-  checkedLayers: CheckedLayer[] | null = null;
+  checkedLayers: CheckedLayer[] = [];
 
   error: string | null = null;
 
@@ -59,6 +59,20 @@ class LayerStore {
     await this.getAll();
   }
 
+  get isCheckAll() {
+    return this.layers.length === this.checkedLayers?.length;
+  }
+
+  initCheckedLayers() {
+    if (this.layers.length) {
+      this.setCheckedLayers(
+        this.layers.map(({ _id, user }) => {
+          return { layerId: _id, userId: user };
+        }),
+      );
+    }
+  }
+
   setCheckedLayers(checkedLayers: CheckedLayer[] | []) {
     this.checkedLayers = checkedLayers;
   }
@@ -76,6 +90,52 @@ class LayerStore {
       this.checkedLayers = this.checkedLayers.filter(
         (elem) => elem.layerId !== id,
       );
+    }
+  }
+
+  checkAndUncheck(checked: boolean) {
+    if (checked) {
+      this.setCheckedLayers(
+        this.layers.map(({ _id, user }) => {
+          return { layerId: _id, userId: user };
+        }) || [],
+      );
+    } else {
+      this.setCheckedLayers([]);
+    }
+  }
+
+  checkCurrentUserLayers(checked: boolean, userId: string | undefined) {
+    if (checked) {
+      let newCurrentLayerIds = [];
+
+      for (const layer of this.layers) {
+        if (layer.user === userId) {
+          newCurrentLayerIds.push({
+            layerId: layer._id,
+            userId: layer.user,
+          });
+        }
+      }
+
+      this.setCheckedLayers(newCurrentLayerIds);
+    } else {
+      this.setCheckedLayers([]);
+    }
+  }
+
+  handleCheckedChange(
+    checked: boolean,
+    layerId: string,
+    userId: string | undefined,
+  ) {
+    if (checked) {
+      this.addCheckedLayer({
+        layerId,
+        userId,
+      });
+    } else {
+      this.removeCheckedLayer(layerId);
     }
   }
 }

@@ -12,6 +12,7 @@ import { object, string, ref } from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useRootStore } from '../../store/root-state.context';
+import GoogleLoginComp from './google-login';
 
 interface FormValues {
   fullName: string;
@@ -81,6 +82,25 @@ const RegistrationForm: FC<LoginFormProps> = ({ onClose }) => {
     if (!userStore.error) {
       onClose && onClose();
       reset();
+      document.location.reload();
+    }
+  };
+
+  const responseGoogle = async (res: any) => {
+    setIsLoading(true);
+    await userStore.signInGoogle(res.tokenId);
+
+    toast({
+      title: userStore.error ? 'You was not logged' : 'You was logged',
+      status: userStore.error ? 'error' : 'success',
+      duration: 4000,
+      isClosable: true,
+    });
+    setIsLoading(false);
+
+    if (!userStore.error) {
+      onClose && onClose();
+      reset();
     }
   };
 
@@ -113,6 +133,7 @@ const RegistrationForm: FC<LoginFormProps> = ({ onClose }) => {
       {registrationError && (
         <p style={{ marginTop: 20, color: 'red' }}>{registrationError}</p>
       )}
+      <GoogleLoginComp responseGoogle={responseGoogle} />
       <Box mt={7} mb={5} display={'flex'} justifyContent={'space-between'}>
         <Button variant="ghost" onClick={onClose}>
           Close

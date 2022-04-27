@@ -13,6 +13,7 @@ export default function GeocoderControl(props: any) {
         ...props,
         marker: false,
         accessToken: props.mapboxAccessToken,
+        placeholder: 'Search for location',
       });
       ctrl.on('loading', props.onLoading);
       ctrl.on('results', props.onResults);
