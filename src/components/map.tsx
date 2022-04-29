@@ -22,11 +22,10 @@ import LayerControl from './layer/layer-control';
 import ToggleMode from './toggle-mode';
 import GeocoderControl from './geocoder-control';
 
-// @ts-ignore
 // eslint-disable-next-line import/no-webpack-loader-syntax
-import MapboxWorker from 'worker-loader!!mapbox-gl/dist/mapbox-gl-csp-worker'; // Load worker code separately with worker-loader
 // @ts-ignore
-mapboxgl.workerClass = MapboxWorker;
+mapboxgl.workerClass =
+  require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default;
 
 const MapComp = observer(() => {
   const { isOpen, onOpen, onClose } = useDisclosure();
