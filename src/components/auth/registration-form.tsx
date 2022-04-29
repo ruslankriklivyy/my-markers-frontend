@@ -15,7 +15,7 @@ import { useRootStore } from '../../store/root-state.context';
 import GoogleLoginComp from './google-login';
 
 interface FormValues {
-  fullName: string;
+  full_name: string;
   email: string;
   password: string;
   passwordRepeat: string;
@@ -23,7 +23,7 @@ interface FormValues {
 
 const schema = object()
   .shape({
-    fullName: string().required('Full name is a required field').max(255),
+    full_name: string().required('Full name is a required field').max(255),
     email: string()
       .email()
       .required('Email is a required field')
@@ -62,7 +62,7 @@ const RegistrationForm: FC<LoginFormProps> = ({ onClose }) => {
   const toast = useToast();
 
   const onSubmit = async (data: FormValues) => {
-    const { fullName: full_name, email, password } = data;
+    const { full_name, email, password } = data;
 
     setIsLoading(true);
     await userStore.registration(full_name, email, password);
@@ -106,10 +106,10 @@ const RegistrationForm: FC<LoginFormProps> = ({ onClose }) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <FormControl mb={3} isInvalid={!!errors.fullName?.message} isRequired>
-        <FormLabel htmlFor="fullName">Full name</FormLabel>
-        <Input {...register('fullName')} id="fullName" type="text" />
-        <FormErrorMessage>{errors.fullName?.message}</FormErrorMessage>
+      <FormControl mb={3} isInvalid={!!errors.full_name?.message} isRequired>
+        <FormLabel htmlFor="full_name">Full name</FormLabel>
+        <Input {...register('full_name')} id="full_name" type="text" />
+        <FormErrorMessage>{errors.full_name?.message}</FormErrorMessage>
       </FormControl>
       <FormControl mb={3} isInvalid={!!errors.email?.message} isRequired>
         <FormLabel htmlFor="email">Email address</FormLabel>

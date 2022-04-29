@@ -10,14 +10,18 @@ import {
   PopoverContent,
   PopoverTrigger,
   Text,
+  useDisclosure,
 } from '@chakra-ui/react';
-import { useRootStore } from '../store/root-state.context';
-import { observer, Observer } from 'mobx-react-lite';
-import avatarIcon from '../assets/icons/avatar.svg';
+import { useRootStore } from '../../store/root-state.context';
+import { observer } from 'mobx-react-lite';
+import avatarIcon from '../../assets/icons/avatar.svg';
 import { EditIcon } from '@chakra-ui/icons';
+import CustomModal from '../custom-modal';
+import UserEditForm from './user-edit-form';
 
 const User = observer(() => {
   const { userStore } = useRootStore();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
     <Box display={'flex'} alignItems={'center'}>
@@ -25,11 +29,12 @@ const User = observer(() => {
         {/*
         // @ts-ignore */}
         <PopoverTrigger>
-          {userStore.currentUser?.avatar ? (
+          {userStore.currentUser?.avatar?.url ? (
             <img
               tabIndex={0}
               className={'avatar'}
-              src={userStore.currentUser.avatar}
+              src={userStore.currentUser.avatar.url}
+              loading="lazy"
               alt={'avatar'}
             />
           ) : (
@@ -71,7 +76,12 @@ const User = observer(() => {
                   : 'Your email is not verified'}
               </Alert>
             </Box>
-            <Button mt={4} color={'blue.500'} rightIcon={<EditIcon />}>
+            <Button
+              onClick={onOpen}
+              mt={4}
+              color={'blue.500'}
+              rightIcon={<EditIcon />}
+            >
               Edit profile
             </Button>
           </PopoverBody>
@@ -80,6 +90,9 @@ const User = observer(() => {
       <Button onClick={() => userStore.logout()} color={'red'} ml={3}>
         Logout
       </Button>
+      <CustomModal isOpen={isOpen} onClose={onClose}>
+        <UserEditForm onClose={onClose} />
+      </CustomModal>
     </Box>
   );
 });

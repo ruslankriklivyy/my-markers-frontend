@@ -222,6 +222,7 @@ code {
   border-radius: 100%;
   transition: all 0.2s ease;
   outline: 2px solid transparent;
+  object-fit: cover;
   cursor: pointer;
 }
 

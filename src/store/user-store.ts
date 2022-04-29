@@ -1,12 +1,19 @@
 import { makeAutoObservable } from 'mobx';
-import { usersApi } from '../core/axios';
+import { userApi } from '../core/api/user-api';
+import { authApi } from '../core/api/auth-api';
+import { fileApi } from '../core/api/file-api';
 
 interface User {
-  avatar?: string;
+  avatar?: { url: string; _id?: string };
   id: string;
   full_name: string;
   email: string;
   is_activated: boolean;
+}
+
+export interface UserUpdated {
+  full_name?: string;
+  avatar?: { url?: string; _id?: string };
 }
 
 interface AuthResponse {
@@ -17,6 +24,7 @@ interface AuthResponse {
 
 class UserStore {
   currentUser: User | null = null;
+  isUserLoading: boolean = false;
 
   error: string | null = null;
 
@@ -26,17 +34,17 @@ class UserStore {
 
   async getCurrentUser() {
     try {
-      const user: User = await usersApi.fetchCurrentUser();
+      const user: User = await userApi.getOne();
       this.setCurrentUser(user);
     } catch (error) {
-      const data: AuthResponse = await usersApi.refresh();
+      const data: AuthResponse = await authApi.refresh();
       this.setCurrentUser(data.user);
     }
   }
 
   async login(email: string, password: string) {
     try {
-      const data: AuthResponse = await usersApi.login(email, password);
+      const data: AuthResponse = await authApi.login(email, password);
       this.setCurrentUser(data.user);
     } catch (error: any) {
       this.setCurrentUser(null);
@@ -46,7 +54,7 @@ class UserStore {
 
   async signInGoogle(accessToken: string) {
     try {
-      const data = await usersApi.signInGoogle(accessToken);
+      const data = await authApi.signInGoogle(accessToken);
       this.setCurrentUser(data.user);
     } catch (error: any) {
       this.error = error.message;
@@ -55,7 +63,7 @@ class UserStore {
 
   async registration(full_name: string, email: string, password: string) {
     try {
-      const data: AuthResponse = await usersApi.registration(
+      const data: AuthResponse = await authApi.registration(
         full_name,
         email,
         password,
@@ -67,8 +75,35 @@ class UserStore {
   }
 
   async logout() {
-    await usersApi.logout();
+    await authApi.logout();
     this.currentUser = null;
+  }
+
+  async update(
+    id: string,
+    user: Omit<UserUpdated, 'avatar'> & { avatar: File | null },
+  ) {
+    try {
+      this.isUserLoading = true;
+
+      let avatar = null;
+      if (user.avatar) {
+        const data = await fileApi.create(user.avatar);
+        avatar = data;
+      }
+
+      const newUser = {
+        full_name: user.full_name,
+        avatar,
+      };
+
+      if (!newUser.avatar) delete newUser.avatar;
+
+      this.currentUser = await userApi.update(id, newUser);
+      this.isUserLoading = false;
+    } catch (error: any) {
+      this.error = error.message;
+    }
   }
 
   setCurrentUser(user: User | null) {

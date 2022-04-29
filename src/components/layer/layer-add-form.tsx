@@ -1,5 +1,4 @@
 import React, { FC, useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import {
   Box,
   Button,
@@ -13,10 +12,11 @@ import {
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { boolean, object, string } from 'yup';
+import { object, string } from 'yup';
 import { useRootStore } from '../../store/root-state.context';
 import { AddIcon, DeleteIcon } from '@chakra-ui/icons';
 import { LayerData } from '../../store/layer-store';
+import { observer } from 'mobx-react-lite';
 
 interface FormValues {
   name: string;
@@ -34,7 +34,7 @@ interface LayerAddFormProps {
   onClose: () => void;
 }
 
-const LayerAddForm: FC<LayerAddFormProps> = ({ onClose }) => {
+const LayerAddForm: FC<LayerAddFormProps> = observer(({ onClose }) => {
   const {
     register,
     handleSubmit,
@@ -45,7 +45,6 @@ const LayerAddForm: FC<LayerAddFormProps> = ({ onClose }) => {
     mode: 'onBlur',
   });
   const { layerStore } = useRootStore();
-  const [customFields, setCustomFields] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
 
@@ -54,7 +53,7 @@ const LayerAddForm: FC<LayerAddFormProps> = ({ onClose }) => {
     const newLayer: Omit<LayerData, '_id'> = {
       name,
       type,
-      custom_fields: customFields,
+      custom_fields: layerStore.customFields,
     };
 
     if (!newLayer.custom_fields) delete newLayer.custom_fields;
@@ -77,47 +76,6 @@ const LayerAddForm: FC<LayerAddFormProps> = ({ onClose }) => {
     }
   };
 
-  const addCustomField = () => {
-    const newField = { id: uuidv4(), name: '', type: '' };
-    const newCustomFields = [...customFields, newField];
-    setCustomFields(newCustomFields);
-  };
-
-  const removeCustomField = (id: string) => {
-    const newCustomFields = customFields.filter((item) => item.id !== id);
-    setCustomFields(newCustomFields);
-  };
-
-  const onChangeFieldName = (id: string, name: string) => {
-    const newCustomFields = customFields.map((item) => {
-      if (item.id === id) {
-        item.name = name;
-      }
-      return item;
-    });
-    setCustomFields(newCustomFields);
-  };
-
-  const onChangeFieldType = (id: string, type: string) => {
-    const newCustomFields = customFields.map((item) => {
-      if (item.id === id) {
-        item.type = type;
-      }
-      return item;
-    });
-    setCustomFields(newCustomFields);
-  };
-
-  const onChangeFieldImportant = (id: string, is_important: boolean) => {
-    const newCustomFields = customFields.map((item) => {
-      if (item.id === id) {
-        item.is_important = is_important;
-      }
-      return item;
-    });
-    setCustomFields(newCustomFields);
-  };
-
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <FormControl mb={3} isInvalid={!!errors.name?.message} isRequired>
@@ -133,12 +91,18 @@ const LayerAddForm: FC<LayerAddFormProps> = ({ onClose }) => {
         </Select>
         <FormErrorMessage>{errors.type?.message}</FormErrorMessage>
       </FormControl>
-      {customFields.map(({ id }) => (
+      {layerStore.customFields.map(({ id }) => (
         <Box mt={5} key={id}>
           <FormControl mb={3} isRequired>
             <FormLabel htmlFor="fieldName">Enter name</FormLabel>
             <Input
-              onChange={(event) => onChangeFieldName(id, event.target.value)}
+              onChange={(event) =>
+                layerStore.changeFieldValue(
+                  id,
+                  'name',
+                  event.target.value as never,
+                )
+              }
               id="fieldName"
               type="text"
             />
@@ -148,7 +112,13 @@ const LayerAddForm: FC<LayerAddFormProps> = ({ onClose }) => {
             <Box display={'flex'} alignItems={'center'}>
               <Select
                 placeholder={'Select field type'}
-                onChange={(event) => onChangeFieldType(id, event.target.value)}
+                onChange={(event) =>
+                  layerStore.changeFieldValue(
+                    id,
+                    'type',
+                    event.target.value as never,
+                  )
+                }
               >
                 <option value="text">Text</option>
                 <option value="date">Date</option>
@@ -156,7 +126,7 @@ const LayerAddForm: FC<LayerAddFormProps> = ({ onClose }) => {
                 <option value="file">File</option>
               </Select>
               <DeleteIcon
-                onClick={() => removeCustomField(id)}
+                onClick={() => layerStore.removeCustomField(id)}
                 style={{ cursor: 'pointer' }}
                 ml={2}
                 w={5}
@@ -168,7 +138,11 @@ const LayerAddForm: FC<LayerAddFormProps> = ({ onClose }) => {
           <FormControl>
             <Checkbox
               onChange={(event) =>
-                onChangeFieldImportant(id, event.target.checked)
+                layerStore.changeFieldValue(
+                  id,
+                  'is_important',
+                  event.target.checked as never,
+                )
               }
             >
               Is important field?
@@ -177,7 +151,7 @@ const LayerAddForm: FC<LayerAddFormProps> = ({ onClose }) => {
         </Box>
       ))}
       <Button
-        onClick={addCustomField}
+        onClick={() => layerStore.addCustomField()}
         mt={4}
         color={'green'}
         rightIcon={<AddIcon w={3} h={3} />}
@@ -200,6 +174,6 @@ const LayerAddForm: FC<LayerAddFormProps> = ({ onClose }) => {
       </Box>
     </form>
   );
-};
+});
 
 export default LayerAddForm;

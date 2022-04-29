@@ -2,12 +2,10 @@ import React, { FC, useState } from 'react';
 import {
   Box,
   Button,
-  Divider,
   FormControl,
   FormErrorMessage,
   FormLabel,
   Input,
-  Text,
   useToast,
 } from '@chakra-ui/react';
 import { object, string } from 'yup';
@@ -15,10 +13,6 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useRootStore } from '../../store/root-state.context';
 import { Observer } from 'mobx-react-lite';
-import GoogleLogin, {
-  GoogleLoginResponse,
-  GoogleLoginResponseOffline,
-} from 'react-google-login';
 import GoogleLoginComp from './google-login';
 
 interface FormValues {

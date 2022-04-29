@@ -7,7 +7,7 @@ import Map, {
 import {
   getCurrentLocation,
   LocationPosition,
-} from '../utils/getCurrentLocation';
+} from '../utils/get-current-location';
 import { Spinner, useColorMode, useDisclosure } from '@chakra-ui/react';
 import { MapLayerMouseEvent } from 'mapbox-gl';
 import CustomModal from './custom-modal';
@@ -52,18 +52,14 @@ const MapComp = observer(() => {
   }, [layerStore.layers, userStore.currentUser]);
 
   useEffect(() => {
-    getCurrentLocation()
-      .then((location) => {
-        setLocation(location as LocationPosition);
-      })
-      .catch((location) => {
-        setLocation(location);
-      });
+    getCurrentLocation().then((location) => {
+      setLocation(location as LocationPosition);
+    });
   }, []);
 
   return (
     <>
-      {location ? (
+      {location?.lng && location?.lat ? (
         <Map
           initialViewState={{
             longitude: location.lng,

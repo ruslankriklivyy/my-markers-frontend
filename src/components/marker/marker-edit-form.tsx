@@ -13,22 +13,23 @@ import {
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { mixed, object, string } from 'yup';
-import { LocationPosition } from '../../utils/getCurrentLocation';
+import { LocationPosition } from '../../utils/get-current-location';
 import { useRootStore } from '../../store/root-state.context';
 import { observer } from 'mobx-react-lite';
 import UploadImage from '../upload-image';
-import { filesApi } from '../../core/axios';
 import CustomFields from '../custom-fields';
-import { LayerDataCustomFields } from '../../store/layer-store';
+import { LayerCustomField } from '../../store/layer-store';
 import { MarkerDataCustomFields } from '../../store/marker-store';
 import { HexColorPicker } from 'react-colorful';
+import MarkerIcon from './marker-icon';
 
-interface FormValues {
+export interface MarkerEditFormValues {
   marker_color: string;
   title: string;
   description: string;
   layer: string;
   location: LocationPosition;
+  [key: string]: any;
 }
 
 interface MarkerEditFormProps {
@@ -52,7 +53,7 @@ const MarkerEditForm: FC<MarkerEditFormProps> = observer(({ id, onClose }) => {
   const [preview, setPreview] = useState<File | null>(null);
   const [currentLayerId, setCurrentLayerId] = useState<string | null>(null);
   const [customFields, setCustomFields] = useState<
-    MarkerDataCustomFields[] | LayerDataCustomFields[] | null
+    MarkerDataCustomFields[] | LayerCustomField[] | null
   >(null);
   const [validSchema, setValidSchema] = useState<any>(schema);
   const [isLoading, setIsLoading] = useState(false);
@@ -65,12 +66,12 @@ const MarkerEditForm: FC<MarkerEditFormProps> = observer(({ id, onClose }) => {
     control,
     reset,
     formState: { errors },
-  } = useForm<FormValues>({
+  } = useForm<MarkerEditFormValues>({
     resolver: yupResolver(validSchema),
     mode: 'onBlur',
   });
 
-  const onSubmit = async (data: FormValues) => {
+  const onSubmit = async (data: MarkerEditFormValues) => {
     if (!id || !markerStore.currentMarker) {
       return;
     }
@@ -172,30 +173,7 @@ const MarkerEditForm: FC<MarkerEditFormProps> = observer(({ id, onClose }) => {
                 color={value}
                 onChange={(color) => onChange(color)}
               />
-              <svg
-                className={'pin'}
-                version="1.1"
-                id="Capa_1"
-                xmlns="http://www.w3.org/2000/svg"
-                xmlnsXlink="http://www.w3.org/1999/xlink"
-                x="0px"
-                y="0px"
-                width="413.099px"
-                height="413.099px"
-                viewBox="0 0 413.099 413.099"
-                xmlSpace="preserve"
-              >
-                <g>
-                  <g>
-                    <path
-                      fill={value}
-                      d="M206.549,0L206.549,0c-82.6,0-149.3,66.7-149.3,149.3c0,28.8,9.2,56.3,22,78.899l97.3,168.399c6.1,11,18.4,16.5,30,16.5
-			c11.601,0,23.3-5.5,30-16.5l97.3-168.299c12.9-22.601,22-49.601,22-78.901C355.849,66.8,289.149,0,206.549,0z M206.549,193.4
-			c-30,0-54.5-24.5-54.5-54.5s24.5-54.5,54.5-54.5s54.5,24.5,54.5,54.5C261.049,169,236.549,193.4,206.549,193.4z"
-                    />
-                  </g>
-                </g>
-              </svg>
+              <MarkerIcon color={value} />
             </Box>
           </FormControl>
         )}

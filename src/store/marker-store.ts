@@ -1,8 +1,11 @@
 import { makeAutoObservable } from 'mobx';
-import { filesApi, markersApi } from '../core/axios';
-import { LocationPosition } from '../utils/getCurrentLocation';
-import { LayerDataCustomFields } from './layer-store';
+import { LocationPosition } from '../utils/get-current-location';
+import { LayerCustomField } from './layer-store';
 import { format } from 'date-fns';
+import { markerApi } from '../core/api/marker-api';
+import { fileApi } from '../core/api/file-api';
+import { MarkerAddFormValues } from '../components/marker/marker-add-form';
+import { MarkerEditFormValues } from '../components/marker/marker-edit-form';
 
 export interface MarkerData {
   _id: string;
@@ -16,7 +19,7 @@ export interface MarkerData {
   custom_fields?: MarkerDataCustomFields[];
 }
 
-export interface MarkerDataCustomFields extends LayerDataCustomFields {
+export interface MarkerDataCustomFields extends LayerCustomField {
   value: string;
 }
 
@@ -31,18 +34,18 @@ class MarkerStore {
   }
 
   async getAll() {
-    this.markers = await markersApi.fetchAll();
+    this.markers = await markerApi.getAll();
   }
 
   async getOne(id: string) {
-    this.currentMarker = await markersApi.fetchOne(id);
+    this.currentMarker = await markerApi.getOne(id);
   }
 
   async create(
-    data: any,
+    data: MarkerAddFormValues,
     location: LocationPosition,
     previewFile?: File | null,
-    customFields?: LayerDataCustomFields[] | null,
+    customFields?: LayerCustomField[] | null,
   ) {
     try {
       const { marker_color, title, description, layer } = data;
@@ -56,7 +59,7 @@ class MarkerStore {
           if (value) {
             switch (field.type) {
               case 'file':
-                const { url } = await filesApi.create(value);
+                const { url } = await fileApi.create(value);
                 newCustomFields.push({
                   ...field,
                   value: url,
@@ -81,11 +84,11 @@ class MarkerStore {
       }
 
       if (previewFile) {
-        const { url, _id } = await filesApi.create(previewFile);
+        const { url, _id } = await fileApi.create(previewFile);
         preview = { url, _id };
       }
 
-      await markersApi.create(
+      await markerApi.create(
         marker_color,
         title,
         description,
@@ -101,11 +104,11 @@ class MarkerStore {
   }
 
   async edit(
-    data: any,
+    data: MarkerEditFormValues,
     id: string,
     location: LocationPosition,
     previewFile?: File | null,
-    customFields?: LayerDataCustomFields[] | null,
+    customFields?: LayerCustomField[] | null,
   ) {
     try {
       const { marker_color, title, description, layer } = data;
@@ -132,7 +135,7 @@ class MarkerStore {
             }
 
             if (field.type === 'file' && typeof value === 'object') {
-              const { url } = await filesApi.create(value);
+              const { url } = await fileApi.create(value);
               newCustomFields.push({
                 ...field,
                 value: url,
@@ -143,11 +146,11 @@ class MarkerStore {
       }
 
       if (previewFile) {
-        const { url, _id } = await filesApi.create(previewFile);
+        const { url, _id } = await fileApi.create(previewFile);
         preview = { url, _id };
       }
 
-      await markersApi.edit(
+      await markerApi.update(
         id,
         marker_color,
         title,
@@ -164,8 +167,8 @@ class MarkerStore {
   }
 
   async remove(id: string, previewId?: string | undefined) {
-    await markersApi.remove(id);
-    if (previewId) await filesApi.remove(previewId);
+    await markerApi.remove(id);
+    if (previewId) await fileApi.remove(previewId);
     await this.getAll();
   }
 }

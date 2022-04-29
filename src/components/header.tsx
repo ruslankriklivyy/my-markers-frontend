@@ -12,7 +12,7 @@ import logoIcon from '../assets/icons/logo.png';
 import CustomModal from './custom-modal';
 import LoginForm from './auth/login-form';
 import RegistrationForm from './auth/registration-form';
-import User from './user';
+import User from './user/user';
 import { useRootStore } from '../store/root-state.context';
 import { observer, Observer } from 'mobx-react-lite';
 import { getCookie } from '../utils/cookies';
@@ -31,14 +31,12 @@ const Header = observer(() => {
   const { userStore } = useRootStore();
   const refreshToken = getCookie('refresh_token');
   const { colorMode } = useColorMode();
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (refreshToken) {
-      setIsLoading(true);
-      userStore.getCurrentUser().finally(() => setIsLoading(false));
+      userStore.getCurrentUser();
     }
-  }, [refreshToken]);
+  }, [refreshToken, userStore.isUserLoading]);
 
   return (
     <Box boxShadow={'md'} p={2}>
@@ -57,7 +55,7 @@ const Header = observer(() => {
         <Observer>
           {() => (
             <>
-              {!isLoading ? (
+              {!userStore.isUserLoading ? (
                 !userStore.currentUser ? (
                   <Box>
                     <Button

@@ -7,7 +7,7 @@ import 'cropperjs/dist/cropper.css';
 import { DeleteIcon } from '@chakra-ui/icons';
 
 interface IUploadImage {
-  defaultValue?: { url: string; _id: string };
+  defaultValue?: { url: string; _id?: string };
   onInput: (file: File) => void;
 }
 
