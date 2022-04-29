@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import Map, {
   FullscreenControl,
   GeolocateControl,
@@ -21,7 +22,6 @@ import LayerControl from './layer/layer-control';
 import ToggleMode from './toggle-mode';
 import GeocoderControl from './geocoder-control';
 import mapboxgl from 'mapbox-gl';
-import MapGL from 'react-map-gl';
 
 /* eslint-disable import/no-webpack-loader-syntax, import/no-unresolved, @typescript-eslint/no-var-requires */
 // @ts-ignore
