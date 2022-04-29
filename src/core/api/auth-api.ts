@@ -1,9 +1,11 @@
 import { instance } from './axios';
+import { removeCookie, setCookie } from '../../utils/cookies';
 
 export const authApi = {
   async signInGoogle(accessToken: string) {
     try {
       const { data } = await instance.post('/auth/google', { accessToken });
+      setCookie('refresh_token', data.refresh_token, 30);
       localStorage.setItem('access_token', data.access_token);
       return data;
     } catch (error: any) {
@@ -14,6 +16,7 @@ export const authApi = {
   async login(email: string, password: string) {
     try {
       const { data } = await instance.post('/auth/login', { email, password });
+      setCookie('refresh_token', data.refresh_token, 30);
       localStorage.setItem('access_token', data.access_token);
       return data;
     } catch (error: any) {
@@ -29,6 +32,7 @@ export const authApi = {
         password,
       });
 
+      setCookie('refresh_token', data.refresh_token, 30);
       localStorage.setItem('access_token', data.access_token);
       return data;
     } catch (error: any) {
@@ -40,6 +44,7 @@ export const authApi = {
     try {
       const { data } = await instance.get('/auth/refresh');
 
+      setCookie('refresh_token', data.refresh_token, 30);
       localStorage.setItem('access_token', data.access_token);
       return data;
     } catch (error) {
@@ -51,6 +56,7 @@ export const authApi = {
     try {
       const { data } = await instance.post('/auth/logout');
 
+      removeCookie('refresh_token');
       localStorage.removeItem('access_token');
       return data;
     } catch (error) {
