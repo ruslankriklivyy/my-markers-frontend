@@ -25,7 +25,7 @@ import GeocoderControl from './geocoder-control';
 // @ts-ignore
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import MapboxWorker from 'worker-loader!!mapbox-gl/dist/mapbox-gl-csp-worker'; // Load worker code separately with worker-loader
-
+// @ts-ignore
 mapboxgl.workerClass = MapboxWorker;
 
 const MapComp = observer(() => {
