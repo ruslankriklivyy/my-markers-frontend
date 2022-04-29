@@ -27,6 +27,7 @@ import mapboxgl from 'mapbox-gl';
 mapboxgl.workerClass =
   require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default;
 /* eslint-enable import/no-webpack-loader-syntax, import/no-unresolved, @typescript-eslint/no-var-requires*/
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 const MapComp = observer(() => {
   const { isOpen, onOpen, onClose } = useDisclosure();
