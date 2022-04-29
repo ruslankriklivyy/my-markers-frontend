@@ -9,7 +9,7 @@ import {
   LocationPosition,
 } from '../utils/get-current-location';
 import { Spinner, useColorMode, useDisclosure } from '@chakra-ui/react';
-import { MapLayerMouseEvent } from 'mapbox-gl';
+import mapboxgl, { MapLayerMouseEvent } from 'mapbox-gl';
 import CustomModal from './custom-modal';
 import MarkerAddForm from './marker/marker-add-form';
 import { useRootStore } from '../store/root-state.context';
@@ -20,6 +20,11 @@ import MarkerPopup from './marker/marker-popup';
 import LayerControl from './layer/layer-control';
 import ToggleMode from './toggle-mode';
 import GeocoderControl from './geocoder-control';
+
+// @ts-ignore
+// eslint-disable-next-line import/no-webpack-loader-syntax
+mapboxgl.workerClass =
+  require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default;
 
 const MapComp = observer(() => {
   const { isOpen, onOpen, onClose } = useDisclosure();
