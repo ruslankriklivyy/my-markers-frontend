@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import maplibregl from 'maplibre-gl';
 import Map, {
   FullscreenControl,
   GeolocateControl,
@@ -69,7 +68,6 @@ const MapComp = observer(() => {
     <>
       {location?.lng && location?.lat ? (
         <Map
-          mapLib={maplibregl}
           initialViewState={{
             longitude: location.lng,
             latitude: location.lat,
