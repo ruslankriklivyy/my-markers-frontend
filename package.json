@@ -44,7 +44,7 @@
     "jest": "^27.4.3",
     "jest-resolve": "^27.4.2",
     "jest-watch-typeahead": "^1.0.0",
-    "mapbox-gl": "^2.8.2",
+    "mapbox-gl": "^1.13.0",
     "mini-css-extract-plugin": "^2.4.5",
     "mobx": "^6.5.0",
     "mobx-react-lite": "^3.3.0",
