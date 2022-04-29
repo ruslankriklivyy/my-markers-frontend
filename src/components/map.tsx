@@ -10,7 +10,7 @@ import {
 } from '../utils/get-current-location';
 import { Spinner, useColorMode, useDisclosure } from '@chakra-ui/react';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { MapLayerMouseEvent } from 'mapbox-gl';
+import mapboxgl, { MapLayerMouseEvent } from 'mapbox-gl';
 import CustomModal from './custom-modal';
 import MarkerAddForm from './marker/marker-add-form';
 import { useRootStore } from '../store/root-state.context';
