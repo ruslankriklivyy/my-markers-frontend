@@ -8,6 +8,7 @@ import {
   getCurrentLocation,
   LocationPosition,
 } from '../utils/get-current-location';
+import { MapLayerMouseEvent } from 'mapbox-gl';
 import { Spinner, useColorMode, useDisclosure } from '@chakra-ui/react';
 import CustomModal from './custom-modal';
 import MarkerAddForm from './marker/marker-add-form';
@@ -22,11 +23,9 @@ import GeocoderControl from './geocoder-control';
 
 /* eslint import/no-webpack-loader-syntax: off */
 // @ts-ignore
-import { MapLayerMouseEvent } from '!mapbox-gl';
+import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
 // @ts-ignore
-import mapboxgl from 'mapbox-gl/dist/mapbox-gl-csp';
-// @ts-ignore
-import MapboxWorker from 'worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker'; // Load worker code separately with worker-loader
+import MapboxWorker from 'mapbox-gl/dist/mapbox-gl-csp-worker';
 // @ts-ignore
 mapboxgl.workerClass = MapboxWorker;
 
