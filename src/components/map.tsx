@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import 'mapbox-gl/dist/mapbox-gl.css';
+// import 'mapbox-gl/dist/mapbox-gl.css';
 import Map, {
   FullscreenControl,
   GeolocateControl,
