@@ -9,6 +9,7 @@ import {
   LocationPosition,
 } from '../utils/get-current-location';
 import { Spinner, useColorMode, useDisclosure } from '@chakra-ui/react';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import mapboxgl, { MapLayerMouseEvent } from 'mapbox-gl';
 import CustomModal from './custom-modal';
 import MarkerAddForm from './marker/marker-add-form';
