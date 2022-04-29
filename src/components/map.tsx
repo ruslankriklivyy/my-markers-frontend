@@ -22,10 +22,13 @@ import GeocoderControl from './geocoder-control';
 
 /* eslint import/no-webpack-loader-syntax: off */
 // @ts-ignore
-import mapboxgl, { MapLayerMouseEvent } from '!mapbox-gl';
+import { MapLayerMouseEvent } from '!mapbox-gl';
 // @ts-ignore
-mapboxgl.workerClass =
-  require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default;
+import mapboxgl from 'mapbox-gl/dist/mapbox-gl-csp';
+// @ts-ignore
+import MapboxWorker from 'worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker'; // Load worker code separately with worker-loader
+// @ts-ignore
+mapboxgl.workerClass = MapboxWorker;
 
 const MapComp = observer(() => {
   const { isOpen, onOpen, onClose } = useDisclosure();
