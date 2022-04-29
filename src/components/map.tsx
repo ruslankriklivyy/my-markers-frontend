@@ -20,14 +20,14 @@ import MarkerPopup from './marker/marker-popup';
 import LayerControl from './layer/layer-control';
 import ToggleMode from './toggle-mode';
 import GeocoderControl from './geocoder-control';
+import mapboxgl from 'mapbox-gl';
+import MapGL from 'react-map-gl';
 
-/* eslint import/no-webpack-loader-syntax: off */
+/* eslint-disable import/no-webpack-loader-syntax, import/no-unresolved, @typescript-eslint/no-var-requires */
 // @ts-ignore
-import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
-// @ts-ignore
-import MapboxWorker from 'mapbox-gl/dist/mapbox-gl-csp-worker';
-// @ts-ignore
-mapboxgl.workerClass = MapboxWorker;
+mapboxgl.workerClass =
+  require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default;
+/* eslint-enable import/no-webpack-loader-syntax, import/no-unresolved, @typescript-eslint/no-var-requires*/
 
 const MapComp = observer(() => {
   const { isOpen, onOpen, onClose } = useDisclosure();
