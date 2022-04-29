@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { ChakraProvider, ColorModeScript } from '@chakra-ui/react';
 import { RootStateProvider } from './store/root-state.context';
 import './index.css';
-// import 'mapbox-gl/dist/mapbox-gl.css';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import App from './App';
 import theme from './core/theme';
 
