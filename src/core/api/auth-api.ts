@@ -1,10 +1,15 @@
 import { instance } from './axios';
+import axios from 'axios';
 import { removeCookie, setCookie } from '../../utils/cookies';
 
 export const authApi = {
   async signInGoogle(accessToken: string) {
     try {
-      const { data } = await instance.post('/auth/google', { accessToken });
+      const { data } = await axios.post(
+        process.env.REACT_APP_API_URL + '/auth/google',
+        { accessToken },
+        { withCredentials: true },
+      );
       // setCookie('refresh_token', data.refresh_token, 30);
       localStorage.setItem('access_token', data.access_token);
       return data;
@@ -15,7 +20,11 @@ export const authApi = {
 
   async login(email: string, password: string) {
     try {
-      const { data } = await instance.post('/auth/login', { email, password });
+      const { data } = await instance.post(
+        '/auth/login',
+        { email, password },
+        { withCredentials: true },
+      );
       // setCookie('refresh_token', data.refresh_token, 30);
       localStorage.setItem('access_token', data.access_token);
       return data;
@@ -26,11 +35,15 @@ export const authApi = {
 
   async registration(full_name: string, email: string, password: string) {
     try {
-      const { data } = await instance.post('/auth/registration', {
-        full_name,
-        email,
-        password,
-      });
+      const { data } = await instance.post(
+        '/auth/registration',
+        {
+          full_name,
+          email,
+          password,
+        },
+        { withCredentials: true },
+      );
 
       // setCookie('refresh_token', data.refresh_token, 30);
       localStorage.setItem('access_token', data.access_token);
@@ -42,7 +55,12 @@ export const authApi = {
 
   async refresh() {
     try {
-      const { data } = await instance.get('/auth/refresh');
+      const { data } = await axios.get(
+        process.env.REACT_APP_API_URL + '/auth/refresh',
+        {
+          withCredentials: true,
+        },
+      );
 
       // setCookie('refresh_token', data.refresh_token, 30);
       localStorage.setItem('access_token', data.access_token);
