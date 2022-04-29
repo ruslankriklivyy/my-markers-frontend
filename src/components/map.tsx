@@ -22,12 +22,12 @@ import ToggleMode from './toggle-mode';
 import GeocoderControl from './geocoder-control';
 import mapboxgl from 'mapbox-gl';
 
+import 'mapbox-gl/dist/mapbox-gl.css';
 /* eslint-disable import/no-webpack-loader-syntax, import/no-unresolved, @typescript-eslint/no-var-requires */
 // @ts-ignore
 mapboxgl.workerClass =
   require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default;
 /* eslint-enable import/no-webpack-loader-syntax, import/no-unresolved, @typescript-eslint/no-var-requires*/
-import 'mapbox-gl/dist/mapbox-gl.css';
 
 const MapComp = observer(() => {
   const { isOpen, onOpen, onClose } = useDisclosure();
