@@ -8,7 +8,15 @@ import {
   getCurrentLocation,
   LocationPosition,
 } from '../utils/get-current-location';
-import { Spinner, useColorMode, useDisclosure } from '@chakra-ui/react';
+import {
+  Box,
+  Text,
+  Spinner,
+  useColorMode,
+  useDisclosure,
+  useToast,
+  Button,
+} from '@chakra-ui/react';
 import CustomModal from './custom-modal';
 import MarkerAddForm from './marker/marker-add-form';
 import { useRootStore } from '../store/root-state.context';
@@ -21,9 +29,15 @@ import ToggleMode from './toggle-mode';
 import GeocoderControl from './geocoder-control';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { MapLayerMouseEvent } from 'mapbox-gl';
+import { getCookie, setCookie } from '../utils/cookies';
 
 const MapComp = observer(() => {
+  const toast = useToast();
+  const isAcceptedFromCookie = getCookie('is_accepted_create');
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isAcceptedCreate, setIsAcceptedCreate] = useState(
+    !!isAcceptedFromCookie,
+  );
   const [location, setLocation] = useState<LocationPosition | null>(null);
   const [lng, setLng] = useState<number | null>(null);
   const [lat, setLat] = useState<number | null>(null);
@@ -36,6 +50,15 @@ const MapComp = observer(() => {
   };
 
   const openMarkerAddForm = (event: MapLayerMouseEvent) => {
+    if (!userStore.currentUser) {
+      return toast({
+        title: 'You are not authorized for create marker',
+        status: 'warning',
+        duration: 4000,
+        isClosable: true,
+      });
+    }
+
     const { lat, lng } = event.lngLat;
 
     setLng(lng);
@@ -47,6 +70,10 @@ const MapComp = observer(() => {
     setCurrentMarker(marker);
     setShowMarkerPopup(true);
   };
+
+  useEffect(() => {
+    setCookie('is_accepted_create', JSON.stringify(true), 9999);
+  }, [isAcceptedCreate]);
 
   useEffect(() => {
     markerStore.getAll();
@@ -131,6 +158,32 @@ const MapComp = observer(() => {
           size={'xl'}
           thickness="3px"
         />
+      )}
+      {!isAcceptedCreate && (
+        <Box
+          display={'flex'}
+          alignItems={'center'}
+          position={'fixed'}
+          textAlign={'center'}
+          left={'50%'}
+          bottom={5}
+          background={'#3182CE'}
+          p={2}
+          borderRadius={10}
+          transform={'translateX(-50%)'}
+        >
+          <Text mr={3} fontWeight={500} color={'#fff'}>
+            Click double on LKM for create marker
+          </Text>
+          <Button
+            onClick={() => setIsAcceptedCreate(true)}
+            height={33}
+            colorScheme={'green'}
+            color={colorMode === 'light' ? '#fff' : undefined}
+          >
+            Ok
+          </Button>
+        </Box>
       )}
       <CustomModal isOpen={isOpen} onClose={onClose}>
         <MarkerAddForm lng={lng} lat={lat} onClose={onClose} />
