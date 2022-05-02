@@ -34,10 +34,8 @@ class UserStore {
 
   async getCurrentUser() {
     try {
-      this.isUserLoading = true;
       const user: User = await userApi.getOne();
       this.setCurrentUser(user);
-      this.isUserLoading = false;
     } catch (error) {
       const data: AuthResponse = await authApi.refresh();
       this.setCurrentUser(data.user);
@@ -46,25 +44,32 @@ class UserStore {
 
   async login(email: string, password: string) {
     try {
+      this.isUserLoading = true;
       const data: AuthResponse = await authApi.login(email, password);
       this.setCurrentUser(data.user);
     } catch (error: any) {
       this.setCurrentUser(null);
       this.error = error.message;
+    } finally {
+      this.isUserLoading = false;
     }
   }
 
   async signInGoogle(accessToken: string) {
     try {
+      this.isUserLoading = true;
       const data = await authApi.signInGoogle(accessToken);
       this.setCurrentUser(data.user);
     } catch (error: any) {
       this.error = error.message;
+    } finally {
+      this.isUserLoading = false;
     }
   }
 
   async registration(full_name: string, email: string, password: string) {
     try {
+      this.isUserLoading = true;
       const data: AuthResponse = await authApi.registration(
         full_name,
         email,
@@ -73,6 +78,8 @@ class UserStore {
       this.setCurrentUser(data.user);
     } catch (error: any) {
       this.error = error.message;
+    } finally {
+      this.isUserLoading = false;
     }
   }
 
