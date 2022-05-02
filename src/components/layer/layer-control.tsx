@@ -138,13 +138,15 @@ const LayerControl = observer(() => {
                       >
                         {name}
                       </Checkbox>
-                      <DeleteIcon
-                        onClick={() => openRemoveModal(_id)}
-                        w={4}
-                        h={4}
-                        color={'red.500'}
-                        cursor={'pointer'}
-                      />
+                      {userStore.currentUser?.id === user && (
+                        <DeleteIcon
+                          onClick={() => openRemoveModal(_id)}
+                          w={4}
+                          h={4}
+                          color={'red.500'}
+                          cursor={'pointer'}
+                        />
+                      )}
                     </Box>
                   ))
                 ) : (
