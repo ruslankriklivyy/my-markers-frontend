@@ -77,15 +77,9 @@ const UploadImage: FC<IUploadImage> = ({ defaultValue, onInput }) => {
         </CustomModal>
       )}
       <div className={'upload-image'} {...getRootProps()}>
-        {previewPhoto && (
-          <img className={'preview-image'} src={previewPhoto} alt={'preview'} />
-        )}
+        {previewPhoto && <img className={'preview-image'} src={previewPhoto} />}
         {!previewPhoto && defaultValue && (
-          <img
-            className={'preview-image'}
-            src={defaultValue.url}
-            alt={'preview'}
-          />
+          <img className={'preview-image'} src={defaultValue.url} />
         )}
         <input multiple={false} {...getInputProps()} />
         {isDragActive ? (

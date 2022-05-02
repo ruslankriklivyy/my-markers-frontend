@@ -34,8 +34,10 @@ class UserStore {
 
   async getCurrentUser() {
     try {
+      this.isUserLoading = true;
       const user: User = await userApi.getOne();
       this.setCurrentUser(user);
+      this.isUserLoading = false;
     } catch (error) {
       const data: AuthResponse = await authApi.refresh();
       this.setCurrentUser(data.user);

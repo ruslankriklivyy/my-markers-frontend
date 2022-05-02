@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   Box,
   Button,
@@ -55,7 +55,7 @@ const Header = observer(() => {
         <Observer>
           {() => (
             <>
-              {!userStore.isUserLoading ? (
+              {!userStore.isUserLoading && userStore.currentUser ? (
                 !userStore.currentUser ? (
                   <Box>
                     <Button
