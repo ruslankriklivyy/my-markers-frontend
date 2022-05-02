@@ -185,12 +185,12 @@ code {
   transition: all 0.1s ease !important;
 }
 
-.chakra-ui-dark .btn-login-google:hover {
-  background: rgba(255, 255, 255, 0.08) !important;
-}
-
 .chakra-ui-dark .btn-login-google > div {
   background: transparent !important;
+}
+
+.chakra-ui-dark .btn-login-google:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
 }
 
 .mapboxgl-ctrl-geolocate:first-child {
