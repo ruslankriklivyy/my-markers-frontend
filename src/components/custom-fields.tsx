@@ -17,6 +17,7 @@ interface CustomFieldsProps {
   type: string;
   defaultValue?: string;
   is_important?: boolean;
+  items?: string[];
   control: any;
   errors?: any;
 }
@@ -26,6 +27,7 @@ const CustomFields: FC<CustomFieldsProps> = ({
   type,
   defaultValue,
   is_important,
+  items,
   control,
   errors,
 }) => {
@@ -143,13 +145,24 @@ const CustomFields: FC<CustomFieldsProps> = ({
         <Controller
           control={control}
           name={fieldName.toLowerCase()}
+          defaultValue={defaultValue}
           render={({ field: { value, onChange } }) => (
             <FormControl mb={3} isRequired={is_important}>
               <FormLabel>{fieldName}</FormLabel>
-              <Select placeholder="Select value">
-                <option value="private">Private</option>
-                <option value="public">Public</option>
+              <Select
+                placeholder="Select value"
+                defaultValue={defaultValue}
+                onChange={(event) => onChange(event.target.value)}
+              >
+                {items?.map((elem) => (
+                  <option value={elem}>{elem}</option>
+                ))}
               </Select>
+              {errors && errors[fieldName.toLowerCase()] && (
+                <p className={'error'}>
+                  {errors[fieldName.toLowerCase()]?.message}
+                </p>
+              )}
             </FormControl>
           )}
         />

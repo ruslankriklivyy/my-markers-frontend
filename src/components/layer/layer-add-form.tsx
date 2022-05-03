@@ -23,6 +23,8 @@ interface FormValues {
   type: 'private' | 'public';
 }
 
+const customFieldsTypes = ['text', 'date', 'multiline', 'file', 'select'];
+
 const schema = object().shape({
   name: string()
     .required('Name is a required field')
@@ -46,6 +48,7 @@ const LayerAddForm: FC<LayerAddFormProps> = observer(({ onClose }) => {
   });
   const { layerStore } = useRootStore();
   const [isLoading, setIsLoading] = useState(false);
+  const [customFieldType, setCustomFieldType] = useState('');
   const toast = useToast();
 
   const onSubmit = async (data: FormValues) => {
@@ -112,18 +115,20 @@ const LayerAddForm: FC<LayerAddFormProps> = observer(({ onClose }) => {
             <Box display={'flex'} alignItems={'center'}>
               <Select
                 placeholder={'Select field type'}
-                onChange={(event) =>
+                onChange={(event) => {
                   layerStore.changeFieldValue(
                     id,
                     'type',
                     event.target.value as never,
-                  )
-                }
+                  );
+                  event.target.value === 'select' &&
+                    layerStore.addCustomFieldSelectItem(id);
+                  setCustomFieldType(event.target.value);
+                }}
               >
-                <option value="text">Text</option>
-                <option value="date">Date</option>
-                <option value="multiline">Multiline</option>
-                <option value="file">File</option>
+                {customFieldsTypes.map((name) => (
+                  <option value={name}>{name}</option>
+                ))}
               </Select>
               <DeleteIcon
                 onClick={() => layerStore.removeCustomField(id)}
@@ -134,6 +139,49 @@ const LayerAddForm: FC<LayerAddFormProps> = observer(({ onClose }) => {
                 color={'red.500'}
               />
             </Box>
+            {customFieldType === 'select' &&
+              layerStore.customFieldSelectItems.map(({ fieldId, values }) =>
+                values.map((name, index) => (
+                  <Box
+                    key={fieldId}
+                    display={'flex'}
+                    alignItems={'center'}
+                    mt={5}
+                  >
+                    <Input
+                      value={name}
+                      onChange={(event) =>
+                        layerStore.changeCustomFieldSelectItem(
+                          event.target.value,
+                          id,
+                          index,
+                        )
+                      }
+                    />
+                    <DeleteIcon
+                      onClick={() =>
+                        layerStore.removeValueFromSelectItem(id, index)
+                      }
+                      style={{ cursor: 'pointer' }}
+                      ml={2}
+                      w={5}
+                      h={5}
+                      color={'red.500'}
+                    />
+                  </Box>
+                )),
+              )}
+            {customFieldType === 'select' && (
+              <Button
+                onClick={() => layerStore.addValueToSelectItem(id)}
+                mt={4}
+                color={'green'}
+                w={7}
+                h={7}
+              >
+                <AddIcon w={3} h={3} />
+              </Button>
+            )}
           </FormControl>
           <FormControl>
             <Checkbox

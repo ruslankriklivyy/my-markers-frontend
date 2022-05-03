@@ -182,12 +182,13 @@ const MarkerAddForm: FC<MarkerAddFormProps> = observer(
         )}
         <Box mt={4}>
           {currentLayerId &&
-            customFields?.map(({ id, name, type, is_important }) => (
+            customFields?.map(({ id, name, type, is_important, items }) => (
               <CustomFields
                 key={id}
                 name={name}
                 type={type}
                 is_important={is_important}
+                items={items}
                 control={control}
                 errors={errors}
               />

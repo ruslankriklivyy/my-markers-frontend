@@ -155,9 +155,11 @@ const LayerControl = observer(() => {
                   </Text>
                 )}
               </Stack>
-              <Button onClick={onOpen} color={'green'} mt={3} isFullWidth>
-                Create
-              </Button>
+              {userStore.currentUser && (
+                <Button onClick={onOpen} color={'green'} mt={3} isFullWidth>
+                  Create
+                </Button>
+              )}
               <CustomModal isOpen={isOpen} onClose={onClose}>
                 <LayerAddForm onClose={onClose} />
               </CustomModal>

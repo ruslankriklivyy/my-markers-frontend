@@ -217,17 +217,20 @@ const MarkerEditForm: FC<MarkerEditFormProps> = observer(({ id, onClose }) => {
       )}
       <Box mt={4}>
         {currentLayerId &&
-          customFields?.map(({ id, name, type, is_important, value }) => (
-            <CustomFields
-              key={id}
-              name={name}
-              type={type}
-              defaultValue={value}
-              is_important={is_important}
-              control={control}
-              errors={errors}
-            />
-          ))}
+          customFields?.map(
+            ({ id, name, type, is_important, items, value }) => (
+              <CustomFields
+                key={id}
+                name={name}
+                type={type}
+                defaultValue={value}
+                is_important={is_important}
+                items={items}
+                control={control}
+                errors={errors}
+              />
+            ),
+          )}
       </Box>
       <Box mt={7} mb={5} display={'flex'} justifyContent={'space-between'}>
         <Button variant="ghost" onClick={onClose}>

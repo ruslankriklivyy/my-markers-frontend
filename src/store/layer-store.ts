@@ -11,6 +11,7 @@ export interface LayerCustomField {
   type: CustomFieldType;
   is_important: boolean;
   value?: string;
+  items?: string[];
 }
 
 export interface LayerData {
@@ -32,6 +33,7 @@ class LayerStore {
   checkedLayers: CheckedLayer[] = [];
 
   customFields: LayerCustomField[] = [];
+  customFieldSelectItems: { fieldId: string; values: string[] }[] = [];
 
   error: string | null = null;
 
@@ -49,6 +51,18 @@ class LayerStore {
 
   async create(newLayer: Omit<LayerData, '_id'>) {
     try {
+      for (const field of newLayer?.custom_fields!) {
+        const values = this.customFieldSelectItems?.find(
+          (elem) => elem.fieldId === field.id,
+        )?.values;
+
+        if (field.type === 'select' && values?.length) {
+          field.items = this.customFieldSelectItems?.find(
+            (elem) => elem.fieldId === field.id,
+          )?.values;
+        }
+      }
+
       await layerApi.create(newLayer);
       await this.getAll();
     } catch (error: any) {
@@ -63,6 +77,47 @@ class LayerStore {
 
   get isCheckAll() {
     return this.layers.length === this.checkedLayers?.length;
+  }
+
+  addCustomFieldSelectItem(fieldId: string) {
+    this.customFieldSelectItems = [
+      ...this.customFieldSelectItems,
+      { fieldId, values: [''] },
+    ];
+  }
+
+  addValueToSelectItem(fieldId: string) {
+    this.customFieldSelectItems = this.customFieldSelectItems.map((field) => {
+      if (field.fieldId === fieldId) {
+        field.values = [...field.values, ''];
+      }
+      return field;
+    });
+  }
+
+  removeValueFromSelectItem(fieldId: string, index: number) {
+    this.customFieldSelectItems = this.customFieldSelectItems.map((field) => {
+      if (field.fieldId === fieldId) {
+        field.values = field.values.filter((_, i) => i !== index);
+      }
+      return field;
+    });
+  }
+
+  removeCustomFieldSelectItem(fieldId: string, index: number) {
+    this.customFieldSelectItems = this.customFieldSelectItems.filter(
+      (elem) => elem.fieldId !== fieldId && elem.values[index],
+    );
+  }
+
+  changeCustomFieldSelectItem(value: string, fieldId: string, index: number) {
+    this.customFieldSelectItems = this.customFieldSelectItems.map((elem) => {
+      if (elem.fieldId === fieldId) {
+        console.log(index);
+        elem.values[index] = value;
+      }
+      return elem;
+    });
   }
 
   addCustomField() {
