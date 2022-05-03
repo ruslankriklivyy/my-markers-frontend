@@ -131,7 +131,10 @@ const LayerAddForm: FC<LayerAddFormProps> = observer(({ onClose }) => {
                 ))}
               </Select>
               <DeleteIcon
-                onClick={() => layerStore.removeCustomField(id)}
+                onClick={() => {
+                  layerStore.removeCustomField(id);
+                  layerStore.removeCustomFieldSelectItem(id);
+                }}
                 style={{ cursor: 'pointer' }}
                 ml={2}
                 w={5}

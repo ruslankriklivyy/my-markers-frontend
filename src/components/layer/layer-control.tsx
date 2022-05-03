@@ -63,7 +63,7 @@ const LayerControl = observer(() => {
         {/*
         // @ts-ignore */}
         <PopoverTrigger>
-          <Button boxShadow={'2xl'}>
+          <Button boxShadow={'2xl'} zIndex={200}>
             <img width={25} height={35} src={layersIcon} alt={'layers'} />
           </Button>
         </PopoverTrigger>

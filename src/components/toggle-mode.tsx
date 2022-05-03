@@ -25,6 +25,7 @@ const ToggleMode = () => {
       position={'absolute'}
       top={290}
       right={3}
+      zIndex={200}
     >
       {colorMode === 'dark' ? (
         <SunIcon w={6} h={6} color={'yellow.500'} />

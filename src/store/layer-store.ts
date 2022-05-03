@@ -104,9 +104,9 @@ class LayerStore {
     });
   }
 
-  removeCustomFieldSelectItem(fieldId: string, index: number) {
+  removeCustomFieldSelectItem(fieldId: string) {
     this.customFieldSelectItems = this.customFieldSelectItems.filter(
-      (elem) => elem.fieldId !== fieldId && elem.values[index],
+      (elem) => elem.fieldId !== fieldId,
     );
   }
 
