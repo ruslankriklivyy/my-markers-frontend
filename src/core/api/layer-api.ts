@@ -3,21 +3,11 @@ import { instance } from './axios';
 
 export const layerApi = {
   async getAll() {
-    try {
-      const { data } = await instance.get('/layers');
-      return data;
-    } catch (error) {
-      console.log(error);
-    }
+    return await instance.get('/layers');
   },
 
   async getOne(id: string) {
-    try {
-      const { data } = await instance.get(`/layers/${id}`);
-      return data;
-    } catch (error) {
-      console.log(error);
-    }
+    return await instance.get(`/layers/${id}`);
   },
 
   async create(newLayer: Omit<LayerData, '_id'>) {

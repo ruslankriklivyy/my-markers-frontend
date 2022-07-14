@@ -8,14 +8,17 @@ import {
   useColorMode,
   useDisclosure,
 } from '@chakra-ui/react';
-import logoIcon from '../assets/icons/logo.png';
+import { observer, Observer } from 'mobx-react-lite';
+
 import CustomModal from './custom-modal';
 import LoginForm from './auth/login-form';
 import RegistrationForm from './auth/registration-form';
 import User from './user/user';
+
 import { useRootStore } from '../store/root-state.context';
-import { observer, Observer } from 'mobx-react-lite';
 import { getCookie } from '../utils/cookies';
+
+import logoIcon from '../assets/icons/logo.png';
 
 const Header = observer(() => {
   const {
@@ -28,15 +31,18 @@ const Header = observer(() => {
     onOpen: onOpenRegistration,
     onClose: onCloseRegistration,
   } = useDisclosure();
-  const { userStore } = useRootStore();
+
+  const {
+    userStore: { getCurrentUser, currentUser, isFetching },
+  } = useRootStore();
   const refreshToken = getCookie('refresh_token');
   const { colorMode } = useColorMode();
 
   useEffect(() => {
     if (refreshToken) {
-      userStore.getCurrentUser();
+      getCurrentUser();
     }
-  }, [refreshToken, userStore.isUserLoading]);
+  }, [refreshToken, getCurrentUser]);
 
   return (
     <Box boxShadow={'md'} p={2}>
@@ -55,13 +61,13 @@ const Header = observer(() => {
         <Observer>
           {() => (
             <>
-              {userStore.isUserLoading ? (
+              {isFetching ? (
                 <Spinner
                   marginRight={20}
                   color={'gray.800'}
                   emptyColor={'gray.300'}
                 />
-              ) : !userStore.currentUser ? (
+              ) : !currentUser ? (
                 <Box>
                   <Button
                     onClick={onOpenLogin}

@@ -37,19 +37,44 @@ class LayerStore {
 
   error: string | null = null;
 
+  isFetching: boolean = false;
+  isSending: boolean = false;
+  isError: boolean = false;
+
   constructor() {
     makeAutoObservable(this);
   }
 
-  async getAll() {
-    this.layers = await layerApi.getAll();
-  }
+  getAll = async () => {
+    this.setLoading();
 
-  async getOne(id: string) {
-    this.currentLayer = await layerApi.getOne(id);
-  }
+    const res = await layerApi.getAll();
 
-  async create(newLayer: Omit<LayerData, '_id'>) {
+    if (!res.data) {
+      return this.setError();
+    }
+
+    this.setLoaded(() => {
+      this.layers = res.data;
+    });
+  };
+
+  getOne = async (id: string) => {
+    this.setLoading();
+
+    const res = await layerApi.getOne(id);
+
+    if (!res.data) {
+      return this.setError();
+    }
+
+    this.setLoaded(() => {
+      this.currentLayer = res.data;
+      this.customFields = res.data.custom_fields;
+    });
+  };
+
+  createOne = async (newLayer: Omit<LayerData, '_id'>) => {
     try {
       for (const field of newLayer?.custom_fields!) {
         const values = this.customFieldSelectItems?.find(
@@ -68,59 +93,62 @@ class LayerStore {
     } catch (error: any) {
       this.error = error.message;
     }
-  }
+  };
 
-  async remove(id: string) {
+  deleteOne = async (id: string) => {
     await layerApi.remove(id);
     await this.getAll();
-  }
+  };
 
   get isCheckAll() {
     return this.layers.length === this.checkedLayers?.length;
   }
 
-  addCustomFieldSelectItem(fieldId: string) {
+  addCustomFieldSelectItem = (fieldId: string) => {
     this.customFieldSelectItems = [
       ...this.customFieldSelectItems,
       { fieldId, values: [''] },
     ];
-  }
+  };
 
-  addValueToSelectItem(fieldId: string) {
+  addValueToSelectItem = (fieldId: string) => {
     this.customFieldSelectItems = this.customFieldSelectItems.map((field) => {
       if (field.fieldId === fieldId) {
         field.values = [...field.values, ''];
       }
       return field;
     });
-  }
+  };
 
-  removeValueFromSelectItem(fieldId: string, index: number) {
+  removeValueFromSelectItem = (fieldId: string, index: number) => {
     this.customFieldSelectItems = this.customFieldSelectItems.map((field) => {
       if (field.fieldId === fieldId) {
         field.values = field.values.filter((_, i) => i !== index);
       }
       return field;
     });
-  }
+  };
 
-  removeCustomFieldSelectItem(fieldId: string) {
+  removeCustomFieldSelectItem = (fieldId: string) => {
     this.customFieldSelectItems = this.customFieldSelectItems.filter(
       (elem) => elem.fieldId !== fieldId,
     );
-  }
+  };
 
-  changeCustomFieldSelectItem(value: string, fieldId: string, index: number) {
+  changeCustomFieldSelectItem = (
+    value: string,
+    fieldId: string,
+    index: number,
+  ) => {
     this.customFieldSelectItems = this.customFieldSelectItems.map((elem) => {
       if (elem.fieldId === fieldId) {
-        console.log(index);
         elem.values[index] = value;
       }
       return elem;
     });
-  }
+  };
 
-  addCustomField() {
+  addCustomField = () => {
     const newField = {
       id: uuidv4(),
       name: '',
@@ -129,18 +157,18 @@ class LayerStore {
     };
     const newCustomFields = [...this.customFields, newField];
     this.setCustomFields(newCustomFields);
-  }
+  };
 
-  removeCustomField(id: string) {
+  removeCustomField = (id: string) => {
     const newCustomFields = this.customFields.filter((item) => item.id !== id);
     this.setCustomFields(newCustomFields);
-  }
+  };
 
-  changeFieldValue(
+  changeFieldValue = (
     id: string,
     fieldName: keyof LayerCustomField,
     value: never,
-  ) {
+  ) => {
     const newCustomFields = this.customFields.map((item) => {
       if (item.id === id) {
         item[fieldName] = value;
@@ -148,13 +176,13 @@ class LayerStore {
       return item;
     });
     this.setCustomFields(newCustomFields);
-  }
+  };
 
-  setCustomFields(fields: LayerCustomField[]) {
+  setCustomFields = (fields: LayerCustomField[]) => {
     this.customFields = fields;
-  }
+  };
 
-  initCheckedLayers() {
+  initCheckedLayers = () => {
     if (this.layers.length) {
       this.setCheckedLayers(
         this.layers.map(({ _id, user }) => {
@@ -162,29 +190,29 @@ class LayerStore {
         }),
       );
     }
-  }
+  };
 
-  setCheckedLayers(checkedLayers: CheckedLayer[] | []) {
+  setCheckedLayers = (checkedLayers: CheckedLayer[] | []) => {
     this.checkedLayers = checkedLayers;
-  }
+  };
 
-  addCheckedLayer(checkedLayer: CheckedLayer) {
+  addCheckedLayer = (checkedLayer: CheckedLayer) => {
     if (!this.checkedLayers) {
       this.checkedLayers = [checkedLayer];
     } else {
       this.checkedLayers = [...this.checkedLayers, checkedLayer];
     }
-  }
+  };
 
-  removeCheckedLayer(id: string) {
+  removeCheckedLayer = (id: string) => {
     if (this.checkedLayers) {
       this.checkedLayers = this.checkedLayers.filter(
         (elem) => elem.layerId !== id,
       );
     }
-  }
+  };
 
-  checkAndUncheck(checked: boolean) {
+  checkAndUncheck = (checked: boolean) => {
     if (checked) {
       this.setCheckedLayers(
         this.layers.map(({ _id, user }) => {
@@ -194,9 +222,9 @@ class LayerStore {
     } else {
       this.setCheckedLayers([]);
     }
-  }
+  };
 
-  checkCurrentUserLayers(checked: boolean, userId: string | undefined) {
+  checkCurrentUserLayers = (checked: boolean, userId: string | undefined) => {
     if (checked) {
       let newCurrentLayerIds = [];
 
@@ -213,13 +241,13 @@ class LayerStore {
     } else {
       this.setCheckedLayers([]);
     }
-  }
+  };
 
-  handleCheckedChange(
+  handleCheckedChange = (
     checked: boolean,
     layerId: string,
     userId: string | undefined,
-  ) {
+  ) => {
     if (checked) {
       this.addCheckedLayer({
         layerId,
@@ -228,7 +256,30 @@ class LayerStore {
     } else {
       this.removeCheckedLayer(layerId);
     }
-  }
+  };
+
+  setLoading = (func?: () => void) => {
+    this.isFetching = true;
+    this.isError = false;
+    this.error = null;
+
+    func && func();
+  };
+
+  setLoaded = (func?: () => void) => {
+    this.isFetching = false;
+    this.isError = false;
+    this.isSending = false;
+
+    func && func();
+  };
+
+  setError = (func?: () => void) => {
+    this.isFetching = false;
+    this.isError = true;
+
+    func && func();
+  };
 }
 
 export default LayerStore;

@@ -1,7 +1,8 @@
 import React, { FC } from 'react';
 import { Marker } from 'react-map-gl';
+import { Tooltip } from '@chakra-ui/react';
+
 import { MarkerData } from '../../store/marker-store';
-import { Tooltip, useColorMode } from '@chakra-ui/react';
 
 interface CustomMarkerProps extends MarkerData {
   openMarkerPopup: (marker: MarkerData) => void;

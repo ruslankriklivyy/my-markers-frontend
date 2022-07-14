@@ -46,7 +46,22 @@ const LayerAddForm: FC<LayerAddFormProps> = observer(({ onClose }) => {
     resolver: yupResolver(schema),
     mode: 'onBlur',
   });
-  const { layerStore } = useRootStore();
+  const {
+    layerStore: {
+      createOne,
+      changeFieldValue,
+      addCustomFieldSelectItem,
+      addValueToSelectItem,
+      removeCustomField,
+      removeCustomFieldSelectItem,
+      changeCustomFieldSelectItem,
+      removeValueFromSelectItem,
+      addCustomField,
+      customFieldSelectItems,
+      customFields,
+      error,
+    },
+  } = useRootStore();
   const [isLoading, setIsLoading] = useState(false);
   const [customFieldType, setCustomFieldType] = useState('');
   const toast = useToast();
@@ -56,24 +71,24 @@ const LayerAddForm: FC<LayerAddFormProps> = observer(({ onClose }) => {
     const newLayer: Omit<LayerData, '_id'> = {
       name,
       type,
-      custom_fields: layerStore.customFields,
+      custom_fields: customFields,
     };
 
     if (!newLayer.custom_fields) delete newLayer.custom_fields;
 
     setIsLoading(true);
-    await layerStore.create(newLayer);
+    await createOne(newLayer);
 
     toast({
-      title: layerStore.error ? 'Layer was not created' : 'Layer created.',
-      description: layerStore.error ?? "We've created your Layer for you.",
-      status: layerStore.error ? 'error' : 'success',
+      title: error ? 'Layer was not created' : 'Layer created.',
+      description: error ?? "We've created your Layer for you.",
+      status: error ? 'error' : 'success',
       duration: 4000,
       isClosable: true,
     });
     setIsLoading(false);
 
-    if (!layerStore.error) {
+    if (!error) {
       onClose && onClose();
       reset();
     }
@@ -94,17 +109,13 @@ const LayerAddForm: FC<LayerAddFormProps> = observer(({ onClose }) => {
         </Select>
         <FormErrorMessage>{errors.type?.message}</FormErrorMessage>
       </FormControl>
-      {layerStore.customFields.map(({ id }) => (
+      {customFields.map(({ id }) => (
         <Box mt={5} key={id}>
           <FormControl mb={3} isRequired>
             <FormLabel htmlFor="fieldName">Enter name</FormLabel>
             <Input
               onChange={(event) =>
-                layerStore.changeFieldValue(
-                  id,
-                  'name',
-                  event.target.value as never,
-                )
+                changeFieldValue(id, 'name', event.target.value as never)
               }
               id="fieldName"
               type="text"
@@ -116,13 +127,9 @@ const LayerAddForm: FC<LayerAddFormProps> = observer(({ onClose }) => {
               <Select
                 placeholder={'Select field type'}
                 onChange={(event) => {
-                  layerStore.changeFieldValue(
-                    id,
-                    'type',
-                    event.target.value as never,
-                  );
+                  changeFieldValue(id, 'type', event.target.value as never);
                   event.target.value === 'select' &&
-                    layerStore.addCustomFieldSelectItem(id);
+                    addCustomFieldSelectItem(id);
                   setCustomFieldType(event.target.value);
                 }}
               >
@@ -132,8 +139,8 @@ const LayerAddForm: FC<LayerAddFormProps> = observer(({ onClose }) => {
               </Select>
               <DeleteIcon
                 onClick={() => {
-                  layerStore.removeCustomField(id);
-                  layerStore.removeCustomFieldSelectItem(id);
+                  removeCustomField(id);
+                  removeCustomFieldSelectItem(id);
                 }}
                 style={{ cursor: 'pointer' }}
                 ml={2}
@@ -143,7 +150,7 @@ const LayerAddForm: FC<LayerAddFormProps> = observer(({ onClose }) => {
               />
             </Box>
             {customFieldType === 'select' &&
-              layerStore.customFieldSelectItems.map(({ fieldId, values }) =>
+              customFieldSelectItems.map(({ fieldId, values }) =>
                 values.map((name, index) => (
                   <Box
                     key={fieldId}
@@ -154,7 +161,7 @@ const LayerAddForm: FC<LayerAddFormProps> = observer(({ onClose }) => {
                     <Input
                       value={name}
                       onChange={(event) =>
-                        layerStore.changeCustomFieldSelectItem(
+                        changeCustomFieldSelectItem(
                           event.target.value,
                           id,
                           index,
@@ -162,9 +169,7 @@ const LayerAddForm: FC<LayerAddFormProps> = observer(({ onClose }) => {
                       }
                     />
                     <DeleteIcon
-                      onClick={() =>
-                        layerStore.removeValueFromSelectItem(id, index)
-                      }
+                      onClick={() => removeValueFromSelectItem(id, index)}
                       style={{ cursor: 'pointer' }}
                       ml={2}
                       w={5}
@@ -176,7 +181,7 @@ const LayerAddForm: FC<LayerAddFormProps> = observer(({ onClose }) => {
               )}
             {customFieldType === 'select' && (
               <Button
-                onClick={() => layerStore.addValueToSelectItem(id)}
+                onClick={() => addValueToSelectItem(id)}
                 mt={4}
                 color={'green'}
                 w={7}
@@ -189,7 +194,7 @@ const LayerAddForm: FC<LayerAddFormProps> = observer(({ onClose }) => {
           <FormControl>
             <Checkbox
               onChange={(event) =>
-                layerStore.changeFieldValue(
+                changeFieldValue(
                   id,
                   'is_important',
                   event.target.checked as never,
@@ -202,7 +207,7 @@ const LayerAddForm: FC<LayerAddFormProps> = observer(({ onClose }) => {
         </Box>
       ))}
       <Button
-        onClick={() => layerStore.addCustomField()}
+        onClick={addCustomField}
         mt={4}
         color={'green'}
         rightIcon={<AddIcon w={3} h={3} />}

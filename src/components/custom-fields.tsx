@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC } from 'react';
 import DatePicker from 'react-datepicker';
 import {
   FormControl,
@@ -10,6 +10,7 @@ import {
 } from '@chakra-ui/react';
 import { Controller } from 'react-hook-form';
 import 'react-datepicker/dist/react-datepicker.css';
+
 import UploadFile from './upload-file';
 
 interface CustomFieldsProps {
@@ -19,7 +20,7 @@ interface CustomFieldsProps {
   is_important?: boolean;
   items?: string[];
   control: any;
-  errors?: any;
+  errors: any;
 }
 
 const CustomFields: FC<CustomFieldsProps> = ({
@@ -47,10 +48,12 @@ const CustomFields: FC<CustomFieldsProps> = ({
               isRequired={is_important}
             >
               <FormLabel>{fieldName}</FormLabel>
+
               <Input
                 value={value}
                 onChange={(event) => onChange(event.target.value)}
               />
+
               {errors && errors[fieldName.toLowerCase()] && (
                 <p className={'error'}>
                   {errors[fieldName.toLowerCase()]?.message}
@@ -73,12 +76,14 @@ const CustomFields: FC<CustomFieldsProps> = ({
               isRequired={is_important}
             >
               <FormLabel>{fieldName}</FormLabel>
+
               <DatePicker
                 selected={value}
-                onChange={(date: any) => onChange(date)}
+                onChange={onChange}
                 customInput={<Input />}
                 calendarClassName={colorMode === 'dark' && 'calendar-dark'}
               />
+
               {errors && errors[fieldName.toLowerCase()] && (
                 <p className={'error'}>
                   {errors[fieldName.toLowerCase()]?.message}
@@ -101,10 +106,12 @@ const CustomFields: FC<CustomFieldsProps> = ({
               isRequired={is_important}
             >
               <FormLabel>{fieldName}</FormLabel>
+
               <Textarea
                 value={value}
                 onChange={(event) => onChange(event.target.value)}
               />
+
               {errors && errors[fieldName.toLowerCase()] && (
                 <p className={'error'}>
                   {errors[fieldName.toLowerCase()]?.message}
@@ -120,17 +127,19 @@ const CustomFields: FC<CustomFieldsProps> = ({
           control={control}
           name={fieldName.toLowerCase()}
           defaultValue={defaultValue}
-          render={({ field: { value, onChange } }) => (
+          render={({ field: { onChange } }) => (
             <FormControl
               mb={3}
               isInvalid={!!errors[fieldName.toLowerCase()]}
               isRequired={is_important}
             >
               <FormLabel>{fieldName}</FormLabel>
+
               <UploadFile
                 defaultValue={defaultValue}
                 onInput={(file) => onChange(file)}
               />
+
               {errors && errors[fieldName.toLowerCase()] && (
                 <p className={'error'}>
                   {errors[fieldName.toLowerCase()]?.message}
@@ -146,9 +155,10 @@ const CustomFields: FC<CustomFieldsProps> = ({
           control={control}
           name={fieldName.toLowerCase()}
           defaultValue={defaultValue}
-          render={({ field: { value, onChange } }) => (
+          render={({ field: { onChange } }) => (
             <FormControl mb={3} isRequired={is_important}>
               <FormLabel>{fieldName}</FormLabel>
+
               <Select
                 placeholder="Select value"
                 defaultValue={defaultValue}
@@ -158,6 +168,7 @@ const CustomFields: FC<CustomFieldsProps> = ({
                   <option value={elem}>{elem}</option>
                 ))}
               </Select>
+
               {errors && errors[fieldName.toLowerCase()] && (
                 <p className={'error'}>
                   {errors[fieldName.toLowerCase()]?.message}

@@ -48,7 +48,7 @@ const UserEditForm: FC<UserEditFormProps> = ({ onClose }) => {
     }
 
     setIsLoading(true);
-    await userStore.update(userStore.currentUser?.id, {
+    await userStore.update(userStore.currentUser?._id, {
       full_name: data.full_name,
       avatar: data.avatar,
     });
@@ -67,11 +67,12 @@ const UserEditForm: FC<UserEditFormProps> = ({ onClose }) => {
         <Controller
           control={control}
           name={'avatar'}
-          render={({ field: { value, onChange } }) => {
+          render={({ field: { onChange } }) => {
             return (
               <UploadImage
-                defaultValue={userStore.currentUser?.avatar}
+                image={userStore.currentUser?.avatar}
                 onInput={onChange}
+                onRemove={() => onChange(null)}
               />
             );
           }}

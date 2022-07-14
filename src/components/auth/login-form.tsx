@@ -10,9 +10,10 @@ import {
 } from '@chakra-ui/react';
 import { object, string } from 'yup';
 import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useRootStore } from '../../store/root-state.context';
 import { Observer } from 'mobx-react-lite';
+import { yupResolver } from '@hookform/resolvers/yup';
+
+import { useRootStore } from '../../store/root-state.context';
 import GoogleLoginComp from './google-login';
 
 interface FormValues {
@@ -92,6 +93,7 @@ const LoginForm: FC<LoginFormProps> = ({ onClose }) => {
     if (!userStore.error) {
       onClose && onClose();
       reset();
+      document.location.reload();
     }
   };
 

@@ -17,24 +17,28 @@ import {
   useToast,
   Button,
 } from '@chakra-ui/react';
-import CustomModal from './custom-modal';
-import MarkerAddForm from './marker/marker-add-form';
-import { useRootStore } from '../store/root-state.context';
+import { MapLayerMouseEvent } from 'mapbox-gl';
 import { observer } from 'mobx-react-lite';
+
+import { useRootStore } from '../store/root-state.context';
 import { MarkerData } from '../store/marker-store';
 import CustomMarker from './marker/custom-marker';
 import MarkerPopup from './marker/marker-popup';
 import LayerControl from './layer/layer-control';
 import ToggleMode from './toggle-mode';
 import GeocoderControl from './geocoder-control';
-import 'mapbox-gl/dist/mapbox-gl.css';
-import { MapLayerMouseEvent } from 'mapbox-gl';
+
 import { getCookie, setCookie } from '../utils/cookies';
+import 'mapbox-gl/dist/mapbox-gl.css';
+import { MarkerForm } from './marker/marker-form';
 
 const MapComp = observer(() => {
   const toast = useToast();
-  const isAcceptedFromCookie = getCookie('is_accepted_create');
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { colorMode } = useColorMode();
+
+  const isAcceptedFromCookie = getCookie('is_accepted_create');
+
   const [isAcceptedCreate, setIsAcceptedCreate] = useState(
     !!isAcceptedFromCookie,
   );
@@ -43,8 +47,13 @@ const MapComp = observer(() => {
   const [lat, setLat] = useState<number | null>(null);
   const [showMarkerPopup, setShowMarkerPopup] = useState(false);
   const [currentMarker, setCurrentMarker] = useState<MarkerData | null>(null);
-  const { markerStore, layerStore, userStore } = useRootStore();
-  const { colorMode } = useColorMode();
+
+  const {
+    markerStore: { getAll, markers },
+    layerStore,
+    userStore,
+  } = useRootStore();
+
   const controlsTheme = {
     bg: colorMode === 'dark' ? 'rgba(255, 255, 255, 0.6)' : '#fff',
   };
@@ -76,8 +85,8 @@ const MapComp = observer(() => {
   }, [isAcceptedCreate]);
 
   useEffect(() => {
-    markerStore.getAll();
-  }, [layerStore.layers, userStore.currentUser]);
+    getAll();
+  }, [layerStore.layers, userStore.currentUser, getAll]);
 
   useEffect(() => {
     getCurrentLocation().then((location) => {
@@ -110,25 +119,31 @@ const MapComp = observer(() => {
             }}
             trackUserLocation
           />
+
           <FullscreenControl
             style={{
               background: controlsTheme.bg,
             }}
           />
+
           <NavigationControl
             style={{
               background: controlsTheme.bg,
             }}
             visualizePitch
           />
+
           <GeocoderControl
             mapboxAccessToken={process.env.REACT_APP_MAPBOX_GL_KEY}
             position="top-left"
           />
+
           <LayerControl />
+
           <ToggleMode />
-          {markerStore.markers &&
-            markerStore.markers.map(
+
+          {markers &&
+            markers.map(
               (marker) =>
                 layerStore.checkedLayers.some(
                   ({ layerId }) => layerId === marker.layer,
@@ -140,6 +155,7 @@ const MapComp = observer(() => {
                   />
                 ),
             )}
+
           {showMarkerPopup && currentMarker && (
             <MarkerPopup
               currentMarker={currentMarker}
@@ -175,6 +191,7 @@ const MapComp = observer(() => {
           <Text mr={3} fontWeight={500} color={'#fff'}>
             Click double on LKM for create marker
           </Text>
+
           <Button
             onClick={() => setIsAcceptedCreate(true)}
             height={33}
@@ -185,9 +202,14 @@ const MapComp = observer(() => {
           </Button>
         </Box>
       )}
-      <CustomModal isOpen={isOpen} onClose={onClose}>
-        <MarkerAddForm lng={lng} lat={lat} onClose={onClose} />
-      </CustomModal>
+
+      {lat && lng && (
+        <MarkerForm
+          isOpen={isOpen}
+          markerLocation={{ lng, lat }}
+          onClose={onClose}
+        />
+      )}
     </>
   );
 });

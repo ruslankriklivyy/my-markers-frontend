@@ -134,7 +134,7 @@ code {
 }
 
 .mapboxgl-popup.mapboxgl-popup-anchor-bottom {
-  z-index: 200 !important;
+  z-index: 150 !important;
 }
 
 .mapboxgl-marker {

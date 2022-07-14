@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useRef, useState } from 'react';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import Cropper from 'react-cropper';
 import { Box, Button, useDisclosure } from '@chakra-ui/react';
@@ -6,12 +6,18 @@ import CustomModal from './custom-modal';
 import 'cropperjs/dist/cropper.css';
 import { DeleteIcon } from '@chakra-ui/icons';
 
-interface IUploadImage {
-  defaultValue?: { url: string; _id?: string };
-  onInput: (file: File) => void;
+export interface UploadImageData {
+  url: string;
+  _id?: string;
 }
 
-const UploadImage: FC<IUploadImage> = ({ defaultValue, onInput }) => {
+interface UploadImageProps {
+  image?: File | UploadImageData | null;
+  onInput: (file: File) => void;
+  onRemove: () => void;
+}
+
+const UploadImage: FC<UploadImageProps> = ({ image, onInput, onRemove }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [previewPhoto, setPreviewPhoto] = useState('');
   const cropperRef = useRef<HTMLImageElement>(null);
@@ -41,7 +47,14 @@ const UploadImage: FC<IUploadImage> = ({ defaultValue, onInput }) => {
 
   const removePreview = () => {
     setPreviewPhoto('');
+    onRemove();
   };
+
+  useEffect(() => {
+    if (image && 'url' in image) {
+      setPreviewPhoto(image.url);
+    }
+  }, [image]);
 
   return (
     <div>
@@ -70,18 +83,19 @@ const UploadImage: FC<IUploadImage> = ({ defaultValue, onInput }) => {
             mt={10}
           >
             <Button onClick={() => onClose()}>Close</Button>
+
             <Button onClick={saveCrop} color={'green'}>
               Save
             </Button>
           </Box>
         </CustomModal>
       )}
+
       <div className={'upload-image'} {...getRootProps()}>
         {previewPhoto && <img className={'preview-image'} src={previewPhoto} />}
-        {!previewPhoto && defaultValue && (
-          <img className={'preview-image'} src={defaultValue.url} />
-        )}
+
         <input multiple={false} {...getInputProps()} />
+
         {isDragActive ? (
           <p>Drop the image here ...</p>
         ) : (

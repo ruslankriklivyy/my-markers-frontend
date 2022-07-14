@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 import { Popup } from 'react-map-gl';
-import { MarkerData } from '../../store/marker-store';
 import {
   Box,
   Button,
@@ -11,10 +10,11 @@ import {
   useDisclosure,
   useColorMode,
 } from '@chakra-ui/react';
-import { useRootStore } from '../../store/root-state.context';
 import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
-import CustomModal from '../custom-modal';
-import MarkerEditForm from './marker-edit-form';
+
+import { useRootStore } from '../../store/root-state.context';
+import { MarkerData } from '../../store/marker-store';
+import { MarkerForm } from './marker-form';
 
 interface MarkerPopupProps {
   currentMarker: MarkerData;
@@ -32,6 +32,7 @@ const MarkerPopup: FC<MarkerPopupProps> = ({
     onOpen: onOpenEdit,
     onClose: onCloseEdit,
   } = useDisclosure();
+
   const { markerStore, userStore } = useRootStore();
   const { colorMode } = useColorMode();
 
@@ -46,8 +47,8 @@ const MarkerPopup: FC<MarkerPopupProps> = ({
         longitude={currentMarker.location.lng}
         latitude={currentMarker.location.lat}
         anchor="bottom"
-        onOpen={() => onOpen()}
-        onClose={() => onClose()}
+        onOpen={onOpen}
+        onClose={onClose}
         closeOnClick={false}
         focusAfterOpen={false}
         className={colorMode === 'dark' ? 'popup-dark' : undefined}
@@ -64,18 +65,23 @@ const MarkerPopup: FC<MarkerPopupProps> = ({
             />
           </Box>
         )}
+
         <Heading as="h4" size="md" mt={2} mb={2}>
           {currentMarker.title}
         </Heading>
+
         <Text fontSize="md" mb={1}>
           {currentMarker.description}
         </Text>
+
         {currentMarker?.custom_fields?.map(({ id, name, type, value }) => (
           <Box key={id} mt={2}>
             <Heading display={'inline'} as="h5" size="sm" mr={1}>
-              {name}:
+              {name.charAt(0).toUpperCase() + name.slice(1)}:
             </Heading>
+
             {type !== 'file' && <Text fontSize="sm">{value}</Text>}
+
             {type === 'file' && (
               <Link
                 style={{ fontSize: 14 }}
@@ -89,7 +95,8 @@ const MarkerPopup: FC<MarkerPopupProps> = ({
             )}
           </Box>
         ))}
-        {currentMarker.user === userStore.currentUser?.id && (
+
+        {currentMarker.user === userStore.currentUser?._id && (
           <Box
             mt={5}
             display={'flex'}
@@ -99,15 +106,22 @@ const MarkerPopup: FC<MarkerPopupProps> = ({
             <Button onClick={onOpenEdit} w={50} color={'blue.500'} isFullWidth>
               <EditIcon w={5} h={5} />
             </Button>
+
             <Button w={50} onClick={removeMarker} color={'red'} isFullWidth>
               <DeleteIcon w={5} h={5} />
             </Button>
           </Box>
         )}
       </Popup>
-      <CustomModal isOpen={isOpenEdit} onClose={onCloseEdit}>
-        <MarkerEditForm id={currentMarker._id} onClose={onCloseEdit} />
-      </CustomModal>
+
+      {isOpenEdit && currentMarker._id && (
+        <MarkerForm
+          id={currentMarker._id}
+          isOpen={isOpenEdit}
+          onClose={onCloseEdit}
+          onCloseMarker={onClose}
+        />
+      )}
     </>
   );
 };

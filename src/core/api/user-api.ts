@@ -13,8 +13,7 @@ export const userApi = {
 
   async update(id: string, user: UserUpdated) {
     try {
-      const { data } = await instance.patch(`/user/${id}`, user);
-      return data;
+      return await instance.patch(`/user/${id}`, user);
     } catch (error: any) {
       throw Error(error.message);
     }
