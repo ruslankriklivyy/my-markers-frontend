@@ -1,6 +1,7 @@
 import { LocationPosition } from '../../utils/get-current-location';
 import { MarkerDataCustomFields } from '../../store/marker-store';
 import instances from '../../utils/axios-interceptor';
+import { UploadImageData } from '../../components/upload-image';
 
 const commonInstance = instances.commonInstance;
 
@@ -46,7 +47,7 @@ export const markerApi = {
     description: string,
     layer: string,
     location: LocationPosition,
-    preview?: { url: string; _id: string } | null,
+    preview: UploadImageData | null,
     customFields?: MarkerDataCustomFields[] | null,
   ) {
     const marker = {

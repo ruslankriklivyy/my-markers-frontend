@@ -9,10 +9,10 @@ import { fileApi } from '../core/api/file-api';
 import { UploadImageData } from '../components/upload-image';
 import { MarkerFormValues } from '../components/marker/marker-form';
 
-interface MarkerEditPayload {
+interface MarkerUpdatePayload {
   data: MarkerFormValues;
   location: LocationPosition;
-  previewFile?: File | UploadImageData | null;
+  previewFile: File | UploadImageData | null;
   oldPreviewId?: string | undefined;
   customFields?: LayerCustomField[] | null;
 }
@@ -147,14 +147,14 @@ class MarkerStore {
     });
   };
 
-  updateOne = async (id: string, payload: MarkerEditPayload) => {
+  updateOne = async (id: string, payload: MarkerUpdatePayload) => {
     this.setLoading();
 
     const { data, customFields, previewFile, oldPreviewId, location } = payload;
     const { marker_color, title, description, layer } = data;
 
     let newCustomFields: MarkerDataCustomFields[] = [];
-    let preview = null;
+    let preview = previewFile instanceof File ? null : previewFile;
 
     if (customFields) {
       for (const field of customFields) {
@@ -186,6 +186,8 @@ class MarkerStore {
       }
     }
 
+    this.setSending();
+
     if (previewFile instanceof File) {
       const { url, _id } = await fileApi.create(previewFile);
       preview = { url, _id };
@@ -194,8 +196,6 @@ class MarkerStore {
     if (!previewFile && oldPreviewId) {
       await fileApi.remove(oldPreviewId);
     }
-
-    this.setSending();
 
     const res = await markerApi.update(
       id,

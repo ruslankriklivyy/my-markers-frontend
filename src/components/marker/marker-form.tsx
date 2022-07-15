@@ -206,10 +206,6 @@ export const MarkerForm: React.FC<MarkerFormProps> = observer(
     }, [id, getOneMarker]);
 
     useEffect(() => {
-      console.log(customFields);
-    }, [customFields]);
-
-    useEffect(() => {
       if (id) {
         setMarkerPreview(currentMarker?.preview || null);
       }
