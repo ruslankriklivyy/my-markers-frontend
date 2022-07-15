@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, ReactNode } from 'react';
+import React, { useEffect, useCallback, useState, ReactNode } from 'react';
 import {
   Alert,
   AlertDescription,
@@ -12,7 +12,7 @@ interface ErrorBoundaryProps {
 }
 
 export const ErrorBoundary = ({ children }: ErrorBoundaryProps) => {
-  const [error, setError] = React.useState('');
+  const [error, setError] = useState('');
 
   const promiseRejectionHandler = useCallback(
     (event: PromiseRejectionEvent) => {
