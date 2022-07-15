@@ -5,19 +5,11 @@ const commonInstance = instances.commonInstance;
 
 export const userApi = {
   async getOne() {
-    try {
-      const { data } = await commonInstance.get('/user');
-      return data;
-    } catch (error) {
-      throw Error();
-    }
+    const { data } = await commonInstance.get('/user');
+    return data;
   },
 
   async update(id: string, user: UserUpdated) {
-    try {
-      return await commonInstance.patch(`/user/${id}`, user);
-    } catch (error: any) {
-      throw Error(error.message);
-    }
+    return await commonInstance.patch(`/user/${id}`, user);
   },
 };

@@ -13,9 +13,14 @@ interface User {
   is_activated: boolean;
 }
 
+interface UserUpdatePayload {
+  user: Omit<UserUpdated, 'avatar'> & { avatar: File | UploadImageData | null };
+  oldAvatarId?: string;
+}
+
 export interface UserUpdated {
   full_name?: string;
-  avatar?: UploadImageData;
+  avatar?: UploadImageData | File | null;
 }
 
 interface AuthResponse {
@@ -30,6 +35,7 @@ class UserStore {
   error: string | null = null;
 
   isFetching: boolean = false;
+  isSending: boolean = false;
   isError: boolean = false;
 
   constructor() {
@@ -39,21 +45,27 @@ class UserStore {
   getCurrentUser = async () => {
     this.setLoading();
 
-    try {
-      const user: User = await userApi.getOne();
+    const user: User = await userApi.getOne();
 
-      this.setLoaded(() => {
-        this.setCurrentUser(user);
-        this.error = null;
-      });
-    } catch (error) {
-      const data: AuthResponse = await authApi.refresh();
+    this.setLoaded(() => {
+      this.setCurrentUser(user);
+      this.error = null;
+    });
 
-      this.setLoaded(() => {
-        this.setCurrentUser(data.user);
-        document.location.reload();
-      });
-    }
+    // try {
+    //   const user: User = await userApi.getOne();
+    //
+    //   this.setLoaded(() => {
+    //     this.setCurrentUser(user);
+    //     this.error = null;
+    //   });
+    // } catch (error) {
+    //   const data: AuthResponse = await authApi.refresh();
+    //
+    //   this.setLoaded(() => {
+    //     this.setCurrentUser(data.user);
+    //   });
+    // }
   };
 
   login = async (email: string, password: string) => {
@@ -112,25 +124,28 @@ class UserStore {
     this.error = null;
   };
 
-  update = async (
-    id: string,
-    user: Omit<UserUpdated, 'avatar'> & { avatar: File | null },
-  ) => {
+  updateOne = async (id: string, payload: UserUpdatePayload) => {
     this.setLoading();
 
-    let avatar = null;
+    const { user, oldAvatarId } = payload;
 
-    if (user.avatar) {
+    let avatar = user.avatar;
+
+    this.setSending();
+
+    if (user.avatar instanceof File) {
       const data = await fileApi.create(user.avatar);
       avatar = data;
+    }
+
+    if (!avatar && oldAvatarId) {
+      await fileApi.remove(oldAvatarId);
     }
 
     const newUser = {
       full_name: user.full_name,
       avatar,
     };
-
-    if (!newUser.avatar) delete newUser.avatar;
 
     const res = await userApi.update(id, newUser);
 
@@ -147,6 +162,14 @@ class UserStore {
     this.currentUser = user;
   }
 
+  setSending = (func?: () => void) => {
+    this.isSending = true;
+    this.isError = false;
+    this.error = null;
+
+    func && func();
+  };
+
   setLoading = (func?: () => void) => {
     this.isFetching = true;
     this.isError = false;
@@ -158,6 +181,7 @@ class UserStore {
   setLoaded = (func?: () => void) => {
     this.isFetching = false;
     this.isError = false;
+    this.isSending = false;
 
     func && func();
   };

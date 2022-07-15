@@ -28,30 +28,24 @@ const User = observer(() => {
   } = useRootStore();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  React.useEffect(() => {
+    console.log(currentUser);
+  }, [currentUser]);
+
   return (
     <Box display={'flex'} alignItems={'center'}>
       <Popover>
         {/*
         // @ts-ignore */}
         <PopoverTrigger>
-          {currentUser?.avatar?.url ? (
-            <img
-              tabIndex={0}
-              className={'avatar'}
-              src={currentUser.avatar.url}
-              referrerPolicy={'no-referrer'}
-              loading={'lazy'}
-              alt={'avatar'}
-            />
-          ) : (
-            <img
-              tabIndex={0}
-              className={'avatar'}
-              src={avatarIcon}
-              referrerPolicy={'no-referrer'}
-              alt={'avatar'}
-            />
-          )}
+          <img
+            tabIndex={0}
+            className={'avatar'}
+            src={currentUser?.avatar?.url || avatarIcon}
+            referrerPolicy={'no-referrer'}
+            loading={'lazy'}
+            alt={'avatar'}
+          />
         </PopoverTrigger>
 
         <PopoverContent>
@@ -116,7 +110,7 @@ const User = observer(() => {
         </PopoverContent>
       </Popover>
 
-      <Button onClick={() => logout()} color={'red'} ml={3}>
+      <Button onClick={logout} color={'red'} ml={3}>
         Logout
       </Button>
 

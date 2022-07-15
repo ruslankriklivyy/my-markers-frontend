@@ -1,4 +1,5 @@
-import axios, { AxiosInstance } from 'axios';
+import axios from 'axios';
+import createAuthRefreshInterceptor from 'axios-auth-refresh';
 
 import { authApi } from '../core/api/auth-api';
 
@@ -21,28 +22,14 @@ const instances = {
   }),
 };
 
-const createInterceptor = (instance: AxiosInstance) => {
-  instance.interceptors.request.use(
-    (response) => {
-      return response;
-    },
-    async (error) => {
-      const originalRequest = error.config;
+const refreshAuth = () =>
+  authApi
+    .refresh()
+    .then(() => Promise.resolve())
+    .catch((err) => console.log(err));
 
-      if (error.response.status === 403 && !originalRequest._retry) {
-        originalRequest._retry = true;
-        const { access_token } = await authApi.refresh();
-        axios.defaults.headers.common['Authorization'] =
-          'Bearer ' + access_token;
-
-        return instance(originalRequest);
-      }
-
-      return Promise.reject(error);
-    },
-  );
-};
-
-Object.values(instances).forEach((instance) => createInterceptor(instance));
+Object.values(instances).forEach((instance) =>
+  createAuthRefreshInterceptor(instance, refreshAuth, { statusCodes: [401] }),
+);
 
 export default instances;
