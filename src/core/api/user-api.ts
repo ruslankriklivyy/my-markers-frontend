@@ -1,10 +1,12 @@
 import { UserUpdated } from '../../store/user-store';
-import { instance } from './axios';
+import { instances } from '../../utils/axios-interceptor';
+
+const commonInstance = instances.commonInstance;
 
 export const userApi = {
   async getOne() {
     try {
-      const { data } = await instance.get('/user');
+      const { data } = await commonInstance.get('/user');
       return data;
     } catch (error) {
       throw Error();
@@ -13,7 +15,7 @@ export const userApi = {
 
   async update(id: string, user: UserUpdated) {
     try {
-      return await instance.patch(`/user/${id}`, user);
+      return await commonInstance.patch(`/user/${id}`, user);
     } catch (error: any) {
       throw Error(error.message);
     }

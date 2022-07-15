@@ -1,4 +1,6 @@
-import { fileInstance } from './axios';
+import { instances } from '../../utils/axios-interceptor';
+
+const fileInstance = instances.fileInstance;
 
 export const fileApi = {
   async create(file: File) {

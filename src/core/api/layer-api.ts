@@ -1,18 +1,20 @@
 import { LayerData } from '../../store/layer-store';
-import { instance } from './axios';
+import { instances } from '../../utils/axios-interceptor';
+
+const commonInstance = instances.commonInstance;
 
 export const layerApi = {
   async getAll() {
-    return await instance.get('/layers');
+    return await commonInstance.get('/layers');
   },
 
   async getOne(id: string) {
-    return await instance.get(`/layers/${id}`);
+    return await commonInstance.get(`/layers/${id}`);
   },
 
   async create(newLayer: Omit<LayerData, '_id'>) {
     try {
-      const { data } = await instance.post('/layers/create', newLayer);
+      const { data } = await commonInstance.post('/layers/create', newLayer);
       return data;
     } catch (error: any) {
       throw Error(error.message);
@@ -21,7 +23,7 @@ export const layerApi = {
 
   async remove(id: string) {
     try {
-      const { data } = await instance.delete(`/layers/${id}`);
+      const { data } = await commonInstance.delete(`/layers/${id}`);
       return data;
     } catch (error) {
       console.log(error);

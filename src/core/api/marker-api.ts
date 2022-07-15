@@ -1,14 +1,16 @@
 import { LocationPosition } from '../../utils/get-current-location';
 import { MarkerDataCustomFields } from '../../store/marker-store';
-import { instance } from './axios';
+import { instances } from '../../utils/axios-interceptor';
+
+const commonInstance = instances.commonInstance;
 
 export const markerApi = {
   async getAll() {
-    return await instance.get('/markers');
+    return await commonInstance.get('/markers');
   },
 
   async getOne(id: string) {
-    return await instance.get(`/markers/${id}`);
+    return await commonInstance.get(`/markers/${id}`);
   },
 
   async create(
@@ -34,7 +36,7 @@ export const markerApi = {
     if (!marker.custom_fields || !marker.custom_fields.length)
       delete marker.custom_fields;
 
-    return await instance.post('/markers/create', marker);
+    return await commonInstance.post('/markers/create', marker);
   },
 
   async update(
@@ -60,12 +62,12 @@ export const markerApi = {
     if (!marker.custom_fields || !marker.custom_fields.length)
       delete marker.custom_fields;
 
-    return await instance.patch(`/markers/${id}`, marker);
+    return await commonInstance.patch(`/markers/${id}`, marker);
   },
 
   async remove(id: string) {
     try {
-      const { data } = await instance.delete(`/markers/${id}`);
+      const { data } = await commonInstance.delete(`/markers/${id}`);
       return data;
     } catch (error) {
       console.log(error);
