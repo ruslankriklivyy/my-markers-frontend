@@ -121,12 +121,12 @@ class MarkerStore {
       }
     }
 
+    this.setSending();
+
     if (previewFile instanceof File) {
       const { url, _id } = await fileApi.create(previewFile);
       preview = { url, _id };
     }
-
-    this.setSending();
 
     const res = await markerApi.create(
       marker_color,
