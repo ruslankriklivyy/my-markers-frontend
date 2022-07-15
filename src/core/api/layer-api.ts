@@ -1,5 +1,5 @@
 import { LayerData } from '../../store/layer-store';
-import { instances } from '../../utils/axios-interceptor';
+import instances from '../../utils/axios-interceptor';
 
 const commonInstance = instances.commonInstance;
 

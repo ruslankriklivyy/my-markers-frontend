@@ -1,5 +1,5 @@
 import { UserUpdated } from '../../store/user-store';
-import { instances } from '../../utils/axios-interceptor';
+import instances from '../../utils/axios-interceptor';
 
 const commonInstance = instances.commonInstance;
 

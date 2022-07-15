@@ -4,20 +4,22 @@ import { authApi } from '../core/api/auth-api';
 
 axios.defaults.withCredentials = true;
 
-const commonInstance = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:3001/api',
-  headers: {
-    Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-  },
-});
+const instances = {
+  commonInstance: axios.create({
+    baseURL: process.env.REACT_APP_API_URL || 'http://localhost:3001/api',
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+    },
+  }),
 
-const fileInstance = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:3001/api',
-  headers: {
-    Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-    'Content-Type': 'multipart/form-data;',
-  },
-});
+  fileInstance: axios.create({
+    baseURL: process.env.REACT_APP_API_URL || 'http://localhost:3001/api',
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+      'Content-Type': 'multipart/form-data;',
+    },
+  }),
+};
 
 const createInterceptor = (instance: AxiosInstance) => {
   instance.interceptors.request.use(
@@ -41,10 +43,6 @@ const createInterceptor = (instance: AxiosInstance) => {
   );
 };
 
-createInterceptor(commonInstance);
-createInterceptor(fileInstance);
+Object.values(instances).forEach((instance) => createInterceptor(instance));
 
-export const instances = {
-  commonInstance,
-  fileInstance,
-};
+export default instances;

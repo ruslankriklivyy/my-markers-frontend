@@ -1,4 +1,4 @@
-import { instances } from '../../utils/axios-interceptor';
+import instances from '../../utils/axios-interceptor';
 
 const fileInstance = instances.fileInstance;
 
