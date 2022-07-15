@@ -174,10 +174,6 @@ export const MarkerForm: React.FC<MarkerFormProps> = observer(
     }, [currentMarker, id]);
 
     useEffect(() => {
-      console.log(errors);
-    }, [errors]);
-
-    useEffect(() => {
       if (currentLayer?.custom_fields?.length) {
         for (const field of currentLayer.custom_fields) {
           if (field.is_important) {

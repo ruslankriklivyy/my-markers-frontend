@@ -38,6 +38,9 @@ export const authApi = {
 
     setCookie('refresh_token', data.refresh_token, 30);
     localStorage.setItem('access_token', data.access_token);
+
+    document.location.reload();
+
     return data;
   },
 
