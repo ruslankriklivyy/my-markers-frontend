@@ -47,7 +47,7 @@ const getDefaultValues = (marker: Partial<MarkerData> | null) => {
   return {
     title: marker?.title || '',
     description: marker?.description || '',
-    marker_color: marker?.marker_color || '',
+    marker_color: marker?.marker_color || '#fff',
     layer: marker?.layer,
   };
 };
@@ -172,6 +172,10 @@ export const MarkerForm: React.FC<MarkerFormProps> = observer(
     const defaultValues = useMemo(() => {
       return getDefaultValues(id ? currentMarker : null);
     }, [currentMarker, id]);
+
+    useEffect(() => {
+      console.log(errors);
+    }, [errors]);
 
     useEffect(() => {
       if (currentLayer?.custom_fields?.length) {
