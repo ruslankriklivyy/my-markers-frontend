@@ -9,8 +9,8 @@ import {
   useColorMode,
 } from '@chakra-ui/react';
 import { Controller } from 'react-hook-form';
-import 'react-datepicker/dist/react-datepicker.css';
 
+import 'react-datepicker/dist/react-datepicker.css';
 import UploadFile from './upload-file';
 
 interface CustomFieldsProps {
@@ -63,6 +63,7 @@ const CustomFields: FC<CustomFieldsProps> = ({
           )}
         />
       );
+
     case 'date':
       return (
         <Controller
@@ -93,6 +94,7 @@ const CustomFields: FC<CustomFieldsProps> = ({
           )}
         />
       );
+
     case 'multiline':
       return (
         <Controller
@@ -121,6 +123,7 @@ const CustomFields: FC<CustomFieldsProps> = ({
           )}
         />
       );
+
     case 'file':
       return (
         <Controller
@@ -149,6 +152,7 @@ const CustomFields: FC<CustomFieldsProps> = ({
           )}
         />
       );
+
     case 'select':
       return (
         <Controller
@@ -178,6 +182,7 @@ const CustomFields: FC<CustomFieldsProps> = ({
           )}
         />
       );
+
     default:
       return <></>;
   }

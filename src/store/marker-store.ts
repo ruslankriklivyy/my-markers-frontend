@@ -213,6 +213,7 @@ class MarkerStore {
     }
 
     this.setLoaded(() => {
+      this.currentMarker = null;
       this.getAll();
     });
   };

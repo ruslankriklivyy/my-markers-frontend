@@ -23,7 +23,6 @@ import MarkerIcon from './marker-icon';
 import CustomFields from '../custom-fields';
 import { LocationPosition } from '../../utils/get-current-location';
 import CustomModal from '../custom-modal';
-import { toJS } from 'mobx';
 
 export interface MarkerFormValues {
   marker_color: string;
@@ -191,7 +190,7 @@ export const MarkerForm: React.FC<MarkerFormProps> = observer(
         setValidSchema(schema);
         setCustomFields(currentLayer.custom_fields);
       }
-    }, [currentLayer, currentLayerId]);
+    }, [currentLayer]);
 
     useEffect(() => {
       if (id && currentMarker?.custom_fields) {
@@ -205,6 +204,10 @@ export const MarkerForm: React.FC<MarkerFormProps> = observer(
         getOneMarker(id);
       }
     }, [id, getOneMarker]);
+
+    useEffect(() => {
+      console.log(customFields);
+    }, [customFields]);
 
     useEffect(() => {
       if (id) {
@@ -224,7 +227,7 @@ export const MarkerForm: React.FC<MarkerFormProps> = observer(
       <CustomModal isOpen={isOpen} onClose={onCancel}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Box mb={3}>
-            <FormLabel htmlFor="preview">Preview</FormLabel>
+            <FormLabel htmlFor={'preview'}>Preview</FormLabel>
 
             <UploadImage
               image={markerPreview}
@@ -250,9 +253,9 @@ export const MarkerForm: React.FC<MarkerFormProps> = observer(
           />
 
           <FormControl mb={3} isInvalid={!!errors.title?.message} isRequired>
-            <FormLabel htmlFor="title">Title</FormLabel>
+            <FormLabel htmlFor={'title'}>Title</FormLabel>
 
-            <Input {...register('title')} id="title" type="text" />
+            <Input {...register('title')} id={'title'} type={'text'} />
 
             <FormErrorMessage>{errors.title?.message}</FormErrorMessage>
           </FormControl>
@@ -262,16 +265,16 @@ export const MarkerForm: React.FC<MarkerFormProps> = observer(
             isInvalid={!!errors.description?.message}
             isRequired
           >
-            <FormLabel htmlFor="description">Description</FormLabel>
+            <FormLabel htmlFor={'description'}>Description</FormLabel>
 
-            <Textarea {...register('description')} id="description" />
+            <Textarea {...register('description')} id={'description'} />
 
             <FormErrorMessage>{errors.description?.message}</FormErrorMessage>
           </FormControl>
 
           {layers && layers?.length > 0 && (
             <FormControl isInvalid={!!errors.layer?.message} isRequired>
-              <FormLabel htmlFor="layer">Layer</FormLabel>
+              <FormLabel htmlFor={'layer'}>Layer</FormLabel>
 
               <Select
                 {...register('layer')}
