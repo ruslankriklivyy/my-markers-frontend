@@ -5,18 +5,21 @@ import { authApi } from '../core/api/auth-api';
 
 axios.defaults.withCredentials = true;
 
+const baseURL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
+const authorization = `Bearer ${localStorage.getItem('access_token')}`;
+
 const instances = {
   commonInstance: axios.create({
-    baseURL: process.env.REACT_APP_API_URL || 'http://localhost:3001/api',
+    baseURL,
     headers: {
-      Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+      Authorization: authorization,
     },
   }),
 
   fileInstance: axios.create({
-    baseURL: process.env.REACT_APP_API_URL || 'http://localhost:3001/api',
+    baseURL,
     headers: {
-      Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+      Authorization: authorization,
       'Content-Type': 'multipart/form-data;',
     },
   }),
