@@ -26,11 +26,8 @@ const User = observer(() => {
   const {
     userStore: { currentUser, isFetching, logout },
   } = useRootStore();
-  const { isOpen, onOpen, onClose } = useDisclosure();
 
-  React.useEffect(() => {
-    console.log(currentUser);
-  }, [currentUser]);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
     <Box display={'flex'} alignItems={'center'}>
