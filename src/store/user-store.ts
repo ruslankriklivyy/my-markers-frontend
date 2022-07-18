@@ -47,25 +47,14 @@ class UserStore {
 
     const user: User = await userApi.getOne();
 
+    if (!user) {
+      return this.setError();
+    }
+
     this.setLoaded(() => {
       this.setCurrentUser(user);
       this.error = null;
     });
-
-    // try {
-    //   const user: User = await userApi.getOne();
-    //
-    //   this.setLoaded(() => {
-    //     this.setCurrentUser(user);
-    //     this.error = null;
-    //   });
-    // } catch (error) {
-    //   const data: AuthResponse = await authApi.refresh();
-    //
-    //   this.setLoaded(() => {
-    //     this.setCurrentUser(data.user);
-    //   });
-    // }
   };
 
   login = async (email: string, password: string) => {
@@ -79,6 +68,7 @@ class UserStore {
         this.error = null;
       });
     } catch (error: any) {
+      this.setError();
       this.setCurrentUser(null);
       this.error = error.message;
     }
@@ -95,6 +85,7 @@ class UserStore {
         this.error = null;
       });
     } catch (error: any) {
+      this.setError();
       this.error = error.message;
     }
   };
@@ -114,6 +105,7 @@ class UserStore {
         this.error = null;
       });
     } catch (error: any) {
+      this.setError();
       this.error = error.message;
     }
   };
