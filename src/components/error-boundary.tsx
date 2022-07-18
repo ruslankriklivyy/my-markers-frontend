@@ -11,12 +11,16 @@ interface ErrorBoundaryProps {
   children: ReactNode;
 }
 
+const ignoredStatusCodes = [401, 404];
+
 export const ErrorBoundary = ({ children }: ErrorBoundaryProps) => {
   const [error, setError] = useState('');
 
   const promiseRejectionHandler = useCallback(
     (event: PromiseRejectionEvent) => {
-      setError(event.reason);
+      if (!ignoredStatusCodes.includes(event.reason.data.response.statusCode)) {
+        setError(event.reason);
+      }
     },
     [],
   );

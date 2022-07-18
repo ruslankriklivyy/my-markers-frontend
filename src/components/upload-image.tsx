@@ -92,7 +92,9 @@ const UploadImage: FC<UploadImageProps> = ({ image, onInput, onRemove }) => {
       )}
 
       <div className={'upload-image'} {...getRootProps()}>
-        {previewPhoto && <img className={'preview-image'} src={previewPhoto} />}
+        {previewPhoto && (
+          <img className={'preview-image'} src={previewPhoto} alt={'preview'} />
+        )}
 
         <input multiple={false} {...getInputProps()} />
 
