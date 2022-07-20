@@ -23,6 +23,8 @@ import CustomModal from '../custom-modal';
 import LayerAddForm from './layer-add-form';
 import { useRootStore } from '../../store/root-state.context';
 import layersIcon from '../../assets/icons/layers.png';
+import useInfiniteScroll from '../../hooks/useInfiniteScroll';
+import { LAYER_PAGINATION_LIMIT } from '../../utils/constants';
 
 const LayerControl = observer(() => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -31,6 +33,7 @@ const LayerControl = observer(() => {
     onOpen: onOpenRemove,
     onClose: onCloseRemove,
   } = useDisclosure();
+
   const {
     layerStore: {
       deleteOne,
@@ -40,13 +43,19 @@ const LayerControl = observer(() => {
       checkCurrentUserLayers,
       checkAndUncheck,
       handleCheckedChange,
+      pagination,
       isCheckAll,
       layers,
       checkedLayers,
     },
     userStore: { currentUser },
   } = useRootStore();
+
   const [currentLayerId, setCurrentLayerId] = useState<string | null>(null);
+
+  const { containerRef, page } = useInfiniteScroll({
+    totalPages: pagination.totalPages,
+  });
 
   const openRemoveModal = (id: string) => {
     setCurrentLayerId(id);
@@ -61,8 +70,8 @@ const LayerControl = observer(() => {
   };
 
   useEffect(() => {
-    getAll();
-  }, [getAll, currentUser]);
+    getAll({ params: { limit: LAYER_PAGINATION_LIMIT, page } });
+  }, [getAll, currentUser, page]);
 
   useEffect(() => {
     initCheckedLayers();
@@ -131,15 +140,15 @@ const LayerControl = observer(() => {
                 </Box>
               </Box>
 
-              <Stack spacing={[1, 3]}>
+              <Stack
+                paddingRight={2}
+                maxHeight={200}
+                overflow={'auto'}
+                spacing={[1, 2]}
+              >
                 {layers.length ? (
                   layers.map(({ _id, name, user }) => (
-                    <Box
-                      key={_id}
-                      display={'flex'}
-                      alignItems={'center'}
-                      justifyContent={'space-between'}
-                    >
+                    <Box key={_id} className={'layer-item'}>
                       <Checkbox
                         defaultChecked
                         onChange={(event) =>
@@ -174,6 +183,8 @@ const LayerControl = observer(() => {
                     Empty data
                   </Text>
                 )}
+
+                <div ref={containerRef} style={{ height: 50 }}></div>
               </Stack>
 
               {currentUser && (

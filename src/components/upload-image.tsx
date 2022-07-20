@@ -57,7 +57,7 @@ const UploadImage: FC<UploadImageProps> = ({ image, onInput, onRemove }) => {
   }, [image]);
 
   return (
-    <div>
+    <>
       {isOpen && previewPhoto && (
         <CustomModal isOpen={isOpen} onClose={onClose}>
           <Box mt={5}>
@@ -91,7 +91,7 @@ const UploadImage: FC<UploadImageProps> = ({ image, onInput, onRemove }) => {
         </CustomModal>
       )}
 
-      <div className={'upload-image'} {...getRootProps()}>
+      <Box className={'upload-image'} {...getRootProps()}>
         {previewPhoto && (
           <img className={'preview-image'} src={previewPhoto} alt={'preview'} />
         )}
@@ -103,7 +103,8 @@ const UploadImage: FC<UploadImageProps> = ({ image, onInput, onRemove }) => {
         ) : (
           <p>Drag 'n' drop some image here, or click</p>
         )}
-      </div>
+      </Box>
+
       {previewPhoto && (
         <DeleteIcon
           onClick={removePreview}
@@ -116,7 +117,7 @@ const UploadImage: FC<UploadImageProps> = ({ image, onInput, onRemove }) => {
           cursor={'pointer'}
         />
       )}
-    </div>
+    </>
   );
 };
 

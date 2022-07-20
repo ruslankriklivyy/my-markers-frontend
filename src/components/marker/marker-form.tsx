@@ -307,7 +307,7 @@ export const MarkerForm: React.FC<MarkerFormProps> = observer(
           </Box>
 
           <Box mt={7} mb={5} display={'flex'} justifyContent={'space-between'}>
-            <Button variant={'ghost'} onClick={onClose}>
+            <Button variant={'ghost'} onClick={onCancel}>
               Close
             </Button>
 

@@ -1,6 +1,9 @@
 import { makeAutoObservable } from 'mobx';
-import { layerApi } from '../core/api/layer-api';
+import { AxiosRequestConfig } from 'axios';
 import { v4 as uuidv4 } from 'uuid';
+
+import { layerApi } from '../core/api/layer-api';
+import { PAGINATION_LIMIT } from '../utils/constants';
 
 export type CustomFieldType = 'text' | 'multiline' | 'date' | 'file' | 'select';
 export type LayerType = 'private' | 'public';
@@ -35,6 +38,16 @@ class LayerStore {
   customFields: LayerCustomField[] = [];
   customFieldSelectItems: { fieldId: string; values: string[] }[] = [];
 
+  pagination: Record<string, any> = {
+    hasNextPage: true,
+    hasPrevPage: false,
+    limit: PAGINATION_LIMIT,
+    offset: 0,
+    page: 1,
+    totalDocs: 0,
+    totalPages: 0,
+  };
+
   error: string | null = null;
 
   isFetching: boolean = false;
@@ -45,17 +58,25 @@ class LayerStore {
     makeAutoObservable(this);
   }
 
-  getAll = async () => {
+  getAll = async (payload?: AxiosRequestConfig) => {
     this.setLoading();
 
-    const res = await layerApi.getAll();
+    const res = await layerApi.getAll(payload);
 
     if (!res.data) {
       return this.setError();
     }
 
     this.setLoaded(() => {
-      this.layers = res.data;
+      const { docs, ...paginationData } = res.data;
+
+      this.pagination = paginationData;
+
+      if (this.pagination.page > 1) {
+        this.layers = [...this.layers, ...docs];
+      } else {
+        this.layers = docs;
+      }
     });
   };
 
@@ -88,8 +109,8 @@ class LayerStore {
         }
       }
 
-      await layerApi.create(newLayer);
-      await this.getAll();
+      const layer = await layerApi.create(newLayer);
+      this.layers.push(layer);
     } catch (error: any) {
       this.error = error.message;
     }
@@ -256,6 +277,10 @@ class LayerStore {
     } else {
       this.removeCheckedLayer(layerId);
     }
+  };
+
+  setPage = (page: number) => {
+    this.pagination.page = page;
   };
 
   setLoading = (func?: () => void) => {

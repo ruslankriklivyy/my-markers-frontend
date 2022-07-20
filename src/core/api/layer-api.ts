@@ -1,11 +1,13 @@
+import { AxiosRequestConfig } from 'axios';
+
 import { LayerData } from '../../store/layer-store';
 import instances from '../../utils/axios-interceptor';
 
 const commonInstance = instances.commonInstance;
 
 export const layerApi = {
-  async getAll() {
-    return await commonInstance.get('/layers');
+  async getAll(payload?: AxiosRequestConfig) {
+    return await commonInstance.get('/layers', payload);
   },
 
   async getOne(id: string) {
